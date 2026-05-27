@@ -1,0 +1,54 @@
+# ================================================================
+# Configuration for RL Inventory Management
+# ================================================================
+
+# --- Training Settings ------------------------------------------
+training:
+  n_episodes: 8000        # Total training episodes per seed
+  n_seeds: 10             # Number of random seeds for evaluation
+  eval_interval: 400      # Evaluate every N episodes during training
+  eval_episodes: 30       # Episodes per evaluation checkpoint
+  save_models: true       # Whether to save trained Q-tables
+
+# --- Agent Hyperparameters --------------------------------------
+agents:
+  q_learning:
+    alpha: 0.15           # Learning rate
+    gamma: 0.99           # Discount factor
+    epsilon_start: 1.0    # Initial exploration rate
+    epsilon_end: 0.05     # Minimum exploration rate
+    epsilon_decay: 0.99998 # Per-step decay (reaches 0.05 around ep 5000)
+
+  sarsa:
+    alpha: 0.15
+    gamma: 0.99
+    epsilon_start: 1.0
+    epsilon_end: 0.05
+    epsilon_decay: 0.99998
+
+  double_q_learning:
+    alpha: 0.15
+    gamma: 0.99
+    epsilon_start: 1.0
+    epsilon_end: 0.05
+    epsilon_decay: 0.99998
+
+# --- Environment Settings --------------------------------------
+environment:
+  regime_transitions: true   # Allow demand regime to change during episodes
+  episode_length: 30         # Days per episode
+
+# --- Evaluation Settings ----------------------------------------
+evaluation:
+  n_episodes: 100            # Episodes for final evaluation
+  test_weekend_surge: true   # Test on unseen weekend surge pattern
+  seed_offset: 10000         # Seed offset for evaluation (avoid train overlap)
+
+# --- Sweep Settings ---------------------------------------------
+sweep:
+  alphas: [0.05, 0.1, 0.2]
+  gammas: [0.9, 0.95, 0.99]
+  epsilon_decays: [0.99995, 0.99998, 0.99999]
+  n_train_episodes: 5000
+  n_eval_episodes: 50
+
