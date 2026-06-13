@@ -279,20 +279,20 @@ class InventoryEnv(BaseEnv):
         regime_name = DEMAND_REGIMES[self.demand_regime]
         day_name = DAY_NAMES[self.day_of_week]
 
-        # Build inventory bar visualization
-        bar_filled = '█' * self.inventory
-        bar_empty = '░' * (self.MAX_INVENTORY - self.inventory)
+        # Build inventory bar visualization (ASCII only)
+        bar_filled = '#' * self.inventory
+        bar_empty = '-' * (self.MAX_INVENTORY - self.inventory)
         bar = bar_filled + bar_empty
 
         output = (
-            f"╔══════════════════════════════════════╗\n"
-            f"║   INVENTORY MANAGEMENT — Day {self.day_count:3d}/30  ║\n"
-            f"╠══════════════════════════════════════╣\n"
-            f"║  Inventory:     {self.inventory:3d}/{self.MAX_INVENTORY}  [{bar}] ║\n"
-            f"║  Demand Regime: {regime_name:>6s}              ║\n"
-            f"║  Day of Week:   {day_name:>3s}                 ║\n"
-            f"║  Pending Order: {self.pending_order:3d} units            ║\n"
-            f"╚══════════════════════════════════════╝"
+            f"+--------------------------------------+\n"
+            f"|   INVENTORY MANAGEMENT - Day {self.day_count:3d}/30  |\n"
+            f"+--------------------------------------+\n"
+            f"|  Inventory:     {self.inventory:3d}/{self.MAX_INVENTORY}  [{bar}] |\n"
+            f"|  Demand Regime: {regime_name:>6s}              |\n"
+            f"|  Day of Week:   {day_name:>3s}                 |\n"
+            f"|  Pending Order: {self.pending_order:3d} units            |\n"
+            f"+--------------------------------------+"
         )
         print(output)
         return output

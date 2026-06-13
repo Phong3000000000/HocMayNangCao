@@ -119,7 +119,23 @@ class VietnamesePDF(FPDF):
             r, g, b = self.color_primary
             self.color_heading1 = self.color_primary
             
-            if theme_hex.lower() == '#a91d22':
+            if theme_hex.lower() == '#222222':
+                # B&W (grayscale) theme
+                self.color_heading1 = (0, 0, 0)
+                self.color_heading2 = (34, 34, 34)
+                self.color_heading3 = (68, 68, 68)
+                self.color_border = (153, 153, 153)
+                self.color_bold = (0, 0, 0)
+                self.color_toc = (0, 0, 0)
+                self.color_quote_bg = (245, 245, 245)
+                self.color_quote_border = (85, 85, 85)
+                self.color_primary = (34, 34, 34)
+                self.color_code_text = (17, 17, 17)
+                self.color_code_bg = (238, 238, 238)
+                self.color_codeblock_bg = (240, 240, 240)
+                self.color_codeblock_text = (17, 17, 17)
+                self.color_link = (34, 34, 34)
+            elif theme_hex.lower() == '#a91d22':
                 self.color_heading2 = (169, 29, 34)
                 self.color_heading3 = (245, 166, 35) # #f5a623
                 self.color_border = (245, 166, 35)   # #f5a623
@@ -138,11 +154,14 @@ class VietnamesePDF(FPDF):
             
         self.color_text = (26, 26, 46)
         self.color_muted = (100, 100, 120)
-        self.color_code_text = (233, 69, 96)
-        self.color_code_bg = (240, 240, 245)
-        self.color_codeblock_bg = (26, 26, 46)
-        self.color_codeblock_text = (224, 224, 224)
-        self.color_link = self.color_primary;
+        
+        # Only set these if not already set by B&W theme
+        if not hasattr(self, 'color_code_text') or theme_hex.lower() != '#222222':
+            self.color_code_text = (233, 69, 96)
+            self.color_code_bg = (240, 240, 245)
+            self.color_codeblock_bg = (26, 26, 46)
+            self.color_codeblock_text = (224, 224, 224)
+            self.color_link = self.color_primary;
 
     def _setup_fonts(self):
         """Register Windows system fonts that support Vietnamese dynamically."""
@@ -264,13 +283,15 @@ class VietnamesePDF(FPDF):
         if version:
             header_text += f" - Phiên bản: {version}"
             
+            
         if header_text:
             self.set_x(self.l_margin + logo_left_w)
             cell_w = pdf_w - logo_left_w - logo_right_w
             self.cell(cell_w, 8, header_text, ln=0, align='L')
             
-        self.set_draw_color(220, 220, 225)
-        self.set_line_width(0.4)
+        # Separator line between header and content
+        self.set_draw_color(180, 180, 180)
+        self.set_line_width(0.3)
         self.line(self.l_margin, 20, self.w - self.r_margin, 20)
         self.ln(12)
 
@@ -278,9 +299,10 @@ class VietnamesePDF(FPDF):
         self.set_y(-15)
         self.set_font('VN', 'I', 8)
         self.set_text_color(150, 150, 150)
-        
-        self.set_draw_color(220, 220, 225)
-        self.set_line_width(0.4)
+
+        # Separator line between content and footer
+        self.set_draw_color(180, 180, 180)
+        self.set_line_width(0.3)
         self.line(self.l_margin, self.get_y() - 2, self.w - self.r_margin, self.get_y() - 2)
         
         style = self.metadata.get('style', {})
@@ -415,9 +437,7 @@ def _pdf_toc(pdf: FPDF, headings_log: list, toc_pages: int):
     pdf.set_text_color(*toc_color)
     pdf.cell(0, 15, "Mục Lục", ln=1, align='C')
     pdf.ln(5)
-    pdf.set_draw_color(*getattr(pdf, 'color_border', getattr(pdf, 'color_primary', (15, 52, 96))))
-    pdf.set_line_width(1.0)
-    pdf.line(pdf.l_margin, pdf.get_y(), pdf.w - pdf.r_margin, pdf.get_y())
+
     pdf.ln(8)
     
     for h in headings_log:
@@ -570,16 +590,12 @@ def _run_pdf_rendering(pdf: FPDF, md_content: str):
 
         # Empty line
         if not stripped:
-            pdf.ln(3)
+            pdf.ln(2)
             i += 1
             continue
 
-        # Horizontal rule
+        # Horizontal rule — spacing only, no line
         if re.match(r'^[-*_]{3,}\s*$', stripped):
-            pdf.ln(4)
-            pdf.set_draw_color(*COLOR_BORDER)
-            pdf.set_line_width(0.8)
-            pdf.line(pdf.l_margin, pdf.get_y(), pdf.w - pdf.r_margin, pdf.get_y())
             pdf.ln(6)
             i += 1
             continue
@@ -651,22 +667,14 @@ def _pdf_heading(pdf: FPDF, text: str, level: int):
         6: getattr(pdf, 'color_heading2', (22, 33, 62))
     }
 
-    pdf.ln(6 if level <= 2 else 4)
+    pdf.ln(4 if level <= 2 else 3)
     pdf.set_font('VN', 'B', sizes.get(level, 11))
     pdf.set_text_color(*colors.get(level, getattr(pdf, 'color_text', (26, 26, 46))))
     pdf.multi_cell(0, sizes.get(level, 11) * 0.5, text)
 
-    # Underline for h1 and h2
-    if level == 1:
-        pdf.set_draw_color(*getattr(pdf, 'color_primary', (15, 52, 96)))
-        pdf.set_line_width(1.2)
-        pdf.line(pdf.l_margin, pdf.get_y() + 1, pdf.w - pdf.r_margin, pdf.get_y() + 1)
-        pdf.ln(5)
-    elif level == 2:
-        pdf.set_draw_color(*getattr(pdf, 'color_border', (233, 69, 96)))
-        pdf.set_line_width(0.6)
-        pdf.line(pdf.l_margin, pdf.get_y() + 1, pdf.w - pdf.r_margin, pdf.get_y() + 1)
-        pdf.ln(4)
+    # Spacing after heading (no underlines)
+    if level <= 2:
+        pdf.ln(2)
     else:
         pdf.ln(2)
 
@@ -694,7 +702,7 @@ def _pdf_rich_text(pdf: FPDF, text: str):
     )
 
     last_end = 0
-    line_h = 5
+    line_h = 5.5
 
     for match in pattern.finditer(text):
         if match.start() > last_end:
@@ -759,6 +767,13 @@ def _pdf_code_block(pdf: FPDF, code_text: str):
             cl = cl[:max_chars - 3] + '...'
         rendered_lines.append(cl)
     
+    # Check if current page has enough space for at least 4 lines
+    # If not, move entirely to next page to avoid tiny chunks + big whitespace
+    min_chunk_h = padding_top + 4 * line_h + padding_bottom
+    remaining = max_y - pdf.get_y()
+    if remaining < min_chunk_h and remaining < (padding_top + len(rendered_lines) * line_h + padding_bottom):
+        pdf.add_page()
+    
     # Split lines into page chunks
     chunks = []  # list of (list of lines)
     current_chunk = []
@@ -770,10 +785,9 @@ def _pdf_code_block(pdf: FPDF, code_text: str):
             needed += padding_top
         
         if y_cursor + needed + padding_bottom > max_y and len(current_chunk) > 0:
-            # Current chunk is full, start new chunk on next page
             chunks.append(current_chunk)
             current_chunk = []
-            y_cursor = pdf.t_margin  # top margin of new page
+            y_cursor = pdf.t_margin
         
         if len(current_chunk) == 0:
             y_cursor += padding_top
@@ -796,10 +810,7 @@ def _pdf_code_block(pdf: FPDF, code_text: str):
         pdf.set_fill_color(*getattr(pdf, 'color_codeblock_bg', (26, 26, 46)))
         pdf.rect(x_start, y_start, width, chunk_h, 'F')
         
-        # 2) Draw left border
-        pdf.set_draw_color(*getattr(pdf, 'color_border', (233, 69, 96)))
-        pdf.set_line_width(1.5)
-        pdf.line(x_start, y_start, x_start, y_start + chunk_h)
+
         
         # 3) Render text on top of background
         pdf.set_text_color(*getattr(pdf, 'color_codeblock_text', (224, 224, 224)))
@@ -830,7 +841,7 @@ def _pdf_blockquote(pdf: FPDF, text: str):
     text_width = width - 14
     str_w = pdf.get_string_width(text)
     n_lines = max(1, int(str_w / text_width) + 1)
-    line_h = 5.5
+    line_h = 6.5
     total_h = n_lines * line_h + 8
 
     # Page break check
@@ -841,9 +852,7 @@ def _pdf_blockquote(pdf: FPDF, text: str):
     pdf.set_fill_color(*getattr(pdf, 'color_quote_bg', (248, 246, 255)))
     pdf.rect(x_start + 5, y_start, width - 5, total_h, 'F')
 
-    pdf.set_draw_color(*getattr(pdf, 'color_quote_border', (83, 52, 131)))
-    pdf.set_line_width(1.5)
-    pdf.line(x_start + 5, y_start, x_start + 5, y_start + total_h)
+
 
     pdf.set_text_color(80, 80, 80)
     pdf.set_xy(x_start + 12, y_start + 4)
@@ -875,7 +884,7 @@ def _pdf_table(pdf: FPDF, header: list, rows: list):
         return
 
     avail_width = pdf.w - pdf.l_margin - pdf.r_margin
-    line_h = 6
+    line_h = 7
     font_size = 8.5
     max_y = pdf.h - pdf.b_margin - 18
 
@@ -990,6 +999,12 @@ def _pdf_table(pdf: FPDF, header: list, rows: list):
         pdf.set_xy(x_start, y_start + row_h)
 
     # --- Render table ---
+    # Check if header + at least 1 row fits on current page
+    header_h = line_h + 4
+    first_row_h = _calc_row_height(rows[0]) if rows else 0
+    if pdf.get_y() + header_h + first_row_h > max_y:
+        pdf.add_page()
+    
     _draw_header()
     
     pdf.set_font('VN', '', font_size)

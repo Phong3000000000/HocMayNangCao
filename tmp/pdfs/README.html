@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>README</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 14mm 18mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      color: #111111;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.4;
+      margin: 0;
+      orphans: 3;
+      widows: 3;
+    }
+
+    /* ── Headings ───────────────────────────────── */
+    h1 {
+      color: #000000;
+      font-size: 18pt;
+      line-height: 1.2;
+      margin: 0 0 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 2px solid #000000;
+      page-break-after: avoid;
+    }
+    h2 {
+      color: #000000;
+      font-size: 13pt;
+      margin: 5mm 0 2mm;
+      padding-bottom: 1mm;
+      border-bottom: 0.5px solid #999999;
+      page-break-after: avoid;
+    }
+    h3 {
+      color: #111111;
+      font-size: 11pt;
+      margin: 4mm 0 1.5mm;
+      page-break-after: avoid;
+    }
+    h4, h5, h6 {
+      color: #222222;
+      font-size: 10pt;
+      margin: 3mm 0 1mm;
+      page-break-after: avoid;
+    }
+
+    /* ── Paragraph & text ──────────────────────── */
+    p {
+      margin: 0 0 2mm;
+    }
+
+    /* ── Horizontal rule ───────────────────────── */
+    hr {
+      border: 0;
+      border-top: 0.5px solid #CCCCCC;
+      margin: 3mm 0;
+    }
+
+    /* ── Tables ────────────────────────────────── */
+    table {
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      line-height: 1.3;
+      margin: 2mm 0 3mm;
+      width: 100%;
+    }
+    thead {
+      display: table-header-group;
+    }
+    th {
+      background: #222222;
+      border: 0.5px solid #222222;
+      color: #FFFFFF;
+      font-weight: 600;
+      padding: 3px 5px;
+      vertical-align: middle;
+      font-size: 8.5pt;
+    }
+    td {
+      border: 0.5px solid #BBBBBB;
+      padding: 2.5px 5px;
+      vertical-align: top;
+      font-size: 8.5pt;
+    }
+    tbody tr:nth-child(even) td {
+      background: #F5F5F5;
+    }
+
+    /* ── Blockquote ────────────────────────────── */
+    blockquote {
+      border-left: 3px solid #555555;
+      background: #F5F5F5;
+      margin: 2mm 0;
+      padding: 2mm 3mm;
+      color: #333333;
+      font-size: 9.5pt;
+    }
+
+    /* ── Code blocks ───────────────────────────── */
+    pre {
+      background: #F0F0F0;
+      border: 0.5px solid #CCCCCC;
+      border-radius: 3px;
+      color: #111111;
+      font-size: 8pt;
+      line-height: 1.25;
+      margin: 2mm 0;
+      overflow-wrap: anywhere;
+      padding: 2.5mm;
+      white-space: pre-wrap;
+    }
+    code {
+      background: #EEEEEE;
+      border-radius: 2px;
+      color: #111111;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.88em;
+      padding: 0.5px 2px;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    /* ── Lists ─────────────────────────────────── */
+    ul, ol {
+      margin: 0 0 2mm 4mm;
+      padding-left: 4mm;
+    }
+    li {
+      margin: 0.5mm 0;
+    }
+
+    /* ── Inline styles ─────────────────────────── */
+    strong {
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
+<h1>Quan ly Ton kho bang Reinforcement Learning</h1>
+<p>Du an RL Inventory Management — De tai 9, Mon Hoc May Nang Cao.</p>
+<p>Agent quyet dinh nhap bao nhieu hang moi ngay de toi da hoa loi nhuan, giam het hang va giam ton kho du.</p>
+<hr>
+<h2>Yeu cau he thong</h2>
+<ul><li><strong>Python 3.10+</strong> (khong can GPU)</li><li><strong>pip</strong> (di kem Python)</li><li>Cac thu vien: numpy, matplotlib, pyyaml, streamlit, pytest</li></ul>
+<hr>
+<h2>Huong dan chay tu dau (cho nguoi tai moi)</h2>
+<blockquote>Tat ca lenh duoi day chay trong terminal (PowerShell hoac CMD) tai thu muc goc cua du an.</blockquote>
+<h3>Buoc 1: Clone hoac giai nen du an</h3>
+<pre><code># Neu tai tu GitHub:
+git clone &lt;link-repo&gt;
+cd HocMayNangCao
+
+# Hoac giai nen file zip va mo terminal tai thu muc HocMayNangCao/</code></pre>
+<h3>Buoc 2: Cai dat dependencies</h3>
+<pre><code>py -m pip install -r requirements.txt</code></pre>
+<blockquote>Neu lenh <code>py</code> khong chay, thu <code>python</code> thay the.</blockquote>
+<h3>Buoc 3: Kiem thu moi truong (dam bao code hoat dong)</h3>
+<pre><code>py -m pytest tests/ -v</code></pre>
+<p>Ket qua mong doi: <strong>50/50 tests passed</strong>. Neu co test FAILED thi dung lai va bao loi.</p>
+<h3>Buoc 4: Huan luyen cac agents RL</h3>
+<pre><code>py experiments/train.py</code></pre>
+<ul><li>Thoi gian: khoang <strong>10-15 phut</strong> (20,000 episodes x 10 seeds x 3 agents).</li><li>Ket qua luu tai <code>results/</code>:</li><li><code>q_learning/seed_*.npz</code> — Q-tables cho Q-Learning</li><li><code>sarsa/seed_*.npz</code> — Q-tables cho SARSA</li><li><code>double_q_learning/seed_*.npz</code> — Q-tables cho Double Q-Learning</li><li><code>*_history.json</code> — Lich su training</li></ul>
+<h3>Buoc 5: Danh gia tat ca agents</h3>
+<pre><code>py experiments/evaluate.py</code></pre>
+<ul><li>So sanh 6 agents: Random, AlwaysOrder2, ReorderThreshold, Q-Learning, SARSA, Double Q.</li><li>Bao cao: mean +- std tren 10 seeds.</li><li>Kiem tra ca weekend surge (unseen demand pattern).</li><li>Ket qua luu tai <code>results/evaluation_results.json</code>.</li></ul>
+<h3>Buoc 6: Tao bieu do</h3>
+<pre><code>py visualization/plots.py</code></pre>
+<ul><li>Tao learning curves, agent comparison, policy heatmaps, epsilon schedule.</li><li>Luu tai <code>reports/figures/</code>.</li></ul>
+<h3>Buoc 7: Chay Dashboard Demo</h3>
+<pre><code>py -m streamlit run dashboard/app.py</code></pre>
+<ul><li>Mo trinh duyet tai dia chi hien thi (thuong la <code>http://localhost:8501</code>).</li><li>Nhan <code>Ctrl+C</code> trong terminal de dung server.</li></ul>
+<p>Dashboard cho phep:</p>
+<ul><li>Chon agent (Random, Heuristic, Q-Learning, SARSA, Double Q)</li><li>Chon demand regime (Low/Medium/High)</li><li>Xem inventory, orders, demand, reward theo ngay</li><li>Xem bang Policy va Policy Heatmap</li><li>Xem Learning Curves</li><li>So sanh tat ca agents</li></ul>
+<h3>(Tuy chon) Buoc 8: Hyperparameter sweep</h3>
+<pre><code>py experiments/sweep.py</code></pre>
+<ul><li>Tim bo hyperparameters tot nhat (alpha, gamma, epsilon_decay).</li><li>Thoi gian: khoang 30+ phut.</li></ul>
+<hr>
+<h2>Tom tat luong chay</h2>
+<pre><code>Buoc 1: Clone/giai nen
+  |
+Buoc 2: py -m pip install -r requirements.txt
+  |
+Buoc 3: py -m pytest tests/ -v              (kiem thu)
+  |
+Buoc 4: py experiments/train.py              (huan luyen ~15 phut)
+  |
+Buoc 5: py experiments/evaluate.py           (danh gia)
+  |
+Buoc 6: py visualization/plots.py           (tao bieu do)
+  |
+Buoc 7: py -m streamlit run dashboard/app.py (demo)</code></pre>
+<hr>
+<h2>Cau truc du an</h2>
+<pre><code>HocMayNangCao/
+├── envs/                          # Moi truong RL (tu cai dat)
+│   ├── base_env.py                # Abstract base class
+│   └── custom_env.py              # Inventory Management Environment
+├── agents/                        # Cac agent
+│   ├── random_agent.py            # Random baseline
+│   ├── heuristic_agent.py         # Heuristic baselines (2 variants)
+│   ├── q_learning.py              # Q-Learning agent
+│   ├── sarsa.py                   # SARSA agent
+│   └── double_q_learning.py       # Double Q-Learning agent
+├── experiments/                   # Huan luyen &amp; danh gia
+│   ├── configs.yaml               # Hyperparameters
+│   ├── train.py                   # Training pipeline
+│   ├── evaluate.py                # Evaluation pipeline
+│   └── sweep.py                   # Hyperparameter search
+├── tests/                         # Kiem thu (50 tests)
+│   ├── test_env.py                # Environment tests
+│   ├── test_encoder.py            # State encoder/decoder tests
+│   └── test_rewards.py            # Reward calculation tests
+├── visualization/                 # Truc quan hoa
+│   ├── render.py                  # Terminal-based episode renderer
+│   └── plots.py                   # Matplotlib plots &amp; charts
+├── dashboard/                     # Dashboard demo
+│   └── app.py                     # Streamlit web dashboard
+├── results/                       # (Generated) Trained models &amp; results
+├── reports/                       # Bao cao
+│   └── figures/                   # (Generated) Charts &amp; plots
+├── requirements.txt               # Dependencies
+└── README.md                      # File nay</code></pre>
+<hr>
+<h2>Thiet ke MDP</h2>
+<table><thead><tr><th style="text-align:left">Thanh phan</th><th style="text-align:left">Chi tiet</th></tr></thead><tbody><tr><td style="text-align:left"><strong>State</strong></td><td style="text-align:left"><code>(inventory, demand_regime, day_of_week, pending_order)</code></td></tr>
+<tr><td style="text-align:left"><strong>Inventory</strong></td><td style="text-align:left">0-20 units</td></tr>
+<tr><td style="text-align:left"><strong>Demand Regime</strong></td><td style="text-align:left">Low (0), Medium (1), High (2)</td></tr>
+<tr><td style="text-align:left"><strong>Day of Week</strong></td><td style="text-align:left">Mon (0) - Sun (6)</td></tr>
+<tr><td style="text-align:left"><strong>Pending Order</strong></td><td style="text-align:left">0-5 units (hang dat hom nay ve ngay mai)</td></tr>
+<tr><td style="text-align:left"><strong>Action</strong></td><td style="text-align:left">Order {0, 1, 2, 3, 4, 5} units</td></tr>
+<tr><td style="text-align:left"><strong>Tong States</strong></td><td style="text-align:left">21 x 3 x 7 x 6 = <strong>2,646</strong></td></tr>
+<tr><td style="text-align:left"><strong>Tong Actions</strong></td><td style="text-align:left"><strong>6</strong></td></tr></tbody></table>
+<h3>Reward Function</h3>
+<pre><code>r = revenue - purchase_cost - holding_cost - stockout_penalty</code></pre>
+<table><thead><tr><th style="text-align:left">Thanh phan</th><th style="text-align:left">Cong thuc</th></tr></thead><tbody><tr><td style="text-align:left">Revenue</td><td style="text-align:left"><code>min(inventory, demand) x 10</code></td></tr>
+<tr><td style="text-align:left">Purchase Cost</td><td style="text-align:left"><code>order x 5</code></td></tr>
+<tr><td style="text-align:left">Holding Cost</td><td style="text-align:left"><code>remaining_inventory x 0.5</code></td></tr>
+<tr><td style="text-align:left">Stockout Penalty</td><td style="text-align:left"><code>max(0, demand - inventory) x 3</code></td></tr></tbody></table>
+<h3>Episode Dynamics (moi ngay)</h3>
+<ol><li><strong>Dau ngay</strong>: <code>inventory += pending_order</code> (cap tai 20)</li><li><strong>Agent chon action</strong>: dat hang -&gt; <code>pending_order = action</code></li><li><strong>Sinh demand</strong>: tu phan phoi roi rac theo <code>demand_regime</code></li><li><strong>Ban hang</strong>: <code>sold = min(inventory, demand)</code></li><li><strong>Cuoi ngay</strong>: tinh reward, ghi nhan metrics</li><li><strong>Episode ket thuc</strong>: sau 30 ngay</li></ol>
+<hr>
+<h2>Thuat toan</h2>
+<h3>Q-Learning (Off-policy)</h3>
+<pre><code>Q(s, a) &lt;- Q(s, a) + alpha [ r + gamma * max_a' Q(s', a') - Q(s, a) ]</code></pre>
+<h3>SARSA (On-policy)</h3>
+<pre><code>Q(s, a) &lt;- Q(s, a) + alpha [ r + gamma * Q(s', a') - Q(s, a) ]</code></pre>
+<h3>Double Q-Learning</h3>
+<p>Dung 2 Q-tables de giam overestimation bias:</p>
+<pre><code># Update Q1 (50% probability):
+a* = argmax_a Q1(s', a)
+Q1(s, a) &lt;- Q1(s, a) + alpha [ r + gamma * Q2(s', a*) - Q1(s, a) ]
+
+# Update Q2 (50% probability):
+a* = argmax_a Q2(s', a)
+Q2(s, a) &lt;- Q2(s, a) + alpha [ r + gamma * Q1(s', a*) - Q2(s, a) ]</code></pre>
+<h3>Hyperparameters</h3>
+<table><thead><tr><th style="text-align:left">Tham so</th><th style="text-align:left">Gia tri</th><th style="text-align:left">Y nghia</th></tr></thead><tbody><tr><td style="text-align:left">alpha</td><td style="text-align:left">0.15</td><td style="text-align:left">Toc do hoc</td></tr>
+<tr><td style="text-align:left">gamma</td><td style="text-align:left">0.99</td><td style="text-align:left">He so chiet khau</td></tr>
+<tr><td style="text-align:left">epsilon_start</td><td style="text-align:left">1.0</td><td style="text-align:left">Kham pha ban dau</td></tr>
+<tr><td style="text-align:left">epsilon_end</td><td style="text-align:left">0.05</td><td style="text-align:left">Kham pha toi thieu</td></tr>
+<tr><td style="text-align:left">epsilon_decay</td><td style="text-align:left">0.999993</td><td style="text-align:left">Toc do giam epsilon</td></tr>
+<tr><td style="text-align:left">n_episodes</td><td style="text-align:left">20,000</td><td style="text-align:left">So episode huan luyen</td></tr>
+<tr><td style="text-align:left">n_seeds</td><td style="text-align:left">10</td><td style="text-align:left">So seed danh gia</td></tr></tbody></table>
+<hr>
+<h2>Danh gia</h2>
+<ul><li><strong>10 seeds</strong> cho moi thuat toan</li><li><strong>Mean +- Std</strong> cho tat ca metrics</li><li><strong>Learning curves</strong> voi smoothing</li><li><strong>Weekend surge</strong> test (unseen demand pattern)</li><li><strong>Metrics</strong>: Profit, Stockout Rate, Holding Cost, Order Frequency, Avg Inventory, Success Rate, Avg Steps, Stockout Days</li></ul>
+<hr>
+<h2>Xu ly loi thuong gap</h2>
+<table><thead><tr><th style="text-align:left">Loi</th><th style="text-align:left">Nguyen nhan</th><th style="text-align:left">Cach fix</th></tr></thead><tbody><tr><td style="text-align:left"><code>'py' is not recognized</code></td><td style="text-align:left">Python chua cai hoac chua trong PATH</td><td style="text-align:left">Cai Python 3.10+ tu python.org, tick &quot;Add to PATH&quot;</td></tr>
+<tr><td style="text-align:left"><code>'streamlit' is not recognized</code></td><td style="text-align:left">streamlit khong trong PATH</td><td style="text-align:left">Dung <code>py -m streamlit run dashboard/app.py</code></td></tr>
+<tr><td style="text-align:left"><code>ModuleNotFoundError: No module named 'yaml'</code></td><td style="text-align:left">Chua cai dependencies</td><td style="text-align:left">Chay <code>py -m pip install -r requirements.txt</code></td></tr>
+<tr><td style="text-align:left"><code>UnicodeEncodeError</code></td><td style="text-align:left">Windows terminal encoding</td><td style="text-align:left">Chay <code>chcp 65001</code> truoc khi chay lenh</td></tr>
+<tr><td style="text-align:left"><code>No trained model found</code></td><td style="text-align:left">Chua train</td><td style="text-align:left">Chay <code>py experiments/train.py</code> truoc</td></tr></tbody></table>
+<hr>
+<h2>Tac gia</h2>
+<p>Nhom De tai 9 — Mon Hoc May Nang Cao</p>
+</body>
+</html>

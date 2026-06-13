@@ -12,7 +12,7 @@ Features:
     - Real-time episode simulation with state/action/reward display
 
 Usage:
-    streamlit run dashboard/app.py
+    py -m streamlit run dashboard/app.py
 
 Author: RL Inventory Management Team
 """
@@ -51,41 +51,67 @@ st.set_page_config(
 # ═══════════════════════════════════════════════════════════════
 # CUSTOM CSS
 # ═══════════════════════════════════════════════════════════════
+# ─── Unified color palette ─────────────────────────────────
+COLOR_PRIMARY = '#4F46E5'    # Indigo-600
+COLOR_SUCCESS = '#059669'    # Emerald-600
+COLOR_WARNING = '#D97706'    # Amber-600
+COLOR_DANGER  = '#DC2626'    # Red-600
+COLOR_INFO    = '#2563EB'    # Blue-600
+COLOR_PURPLE  = '#7C3AED'    # Violet-600
+COLOR_SLATE   = '#475569'    # Slate-600
+COLOR_LIGHT   = '#F8FAFC'    # Slate-50
+
+CHART_COLORS = {
+    'inventory': COLOR_SUCCESS,
+    'orders': COLOR_INFO,
+    'demand': COLOR_WARNING,
+    'stockout': COLOR_DANGER,
+    'reward': COLOR_PRIMARY,
+    'cumulative': COLOR_PURPLE,
+}
+
+AGENT_CHART_COLORS = [
+    '#EF4444',  # Red-500
+    '#F59E0B',  # Amber-500
+    '#10B981',  # Emerald-500
+    '#3B82F6',  # Blue-500
+    '#6366F1',  # Indigo-500
+    '#8B5CF6',  # Violet-500
+]
+
 st.markdown("""
 <style>
     .main-header {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 700;
         text-align: center;
-        padding: 1rem 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0.8rem 0;
+        background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 2rem;
+        margin-bottom: 0.5rem;
     }
-    .metric-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        padding: 1rem;
-        border-radius: 10px;
+    .main-subtitle {
         text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .metric-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #2d3748;
-    }
-    .metric-label {
-        font-size: 0.9rem;
-        color: #718096;
-        margin-top: 0.3rem;
+        color: #64748B;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 4px;
     }
     .stTabs [data-baseweb="tab"] {
-        padding: 10px 20px;
-        border-radius: 10px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #F8FAFC;
+    }
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #1E293B;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -214,43 +240,43 @@ def build_policy_table(agent, env, regime=1, dow=0):
 
 def main():
     # ─── Header ────────────────────────────────────────────────
-    st.markdown('<div class="main-header">📦 RL Inventory Management</div>',
+    st.markdown('<div class="main-header">RL Inventory Management</div>',
                 unsafe_allow_html=True)
     st.markdown(
-        '<p style="text-align:center; color:#718096; font-size:1.1rem;">'
-        'Quản lý Tồn kho bằng Reinforcement Learning — Dashboard Demo'
-        '</p>',
+        '<div class="main-subtitle">'
+        'Quan ly Ton kho bang Reinforcement Learning'
+        '</div>',
         unsafe_allow_html=True
     )
 
     # ─── Sidebar Controls ─────────────────────────────────────
     with st.sidebar:
-        st.header("⚙️ Controls")
+        st.header("Controls")
 
         agent_type = st.selectbox(
-            "🤖 Select Agent",
+            "Select Agent",
             ['Random', 'Always Order 2', 'Reorder Threshold',
              'Q-Learning', 'SARSA', 'Double Q-Learning'],
             index=3  # Default to Q-Learning
         )
 
         demand_regime = st.selectbox(
-            "📊 Demand Regime",
+            "Demand Regime",
             ['Low', 'Medium', 'High'],
             index=1
         )
         regime_id = {'Low': 0, 'Medium': 1, 'High': 2}[demand_regime]
 
-        weekend_surge = st.checkbox("🌊 Weekend Surge (unseen pattern)")
-        episode_seed = st.number_input("🎲 Episode Seed", 0, 999, 42)
+        weekend_surge = st.checkbox("Weekend Surge (unseen pattern)")
+        episode_seed = st.number_input("Episode Seed", 0, 999, 42)
 
         st.divider()
-        st.markdown("### 📋 About")
+        st.markdown("### About")
         st.markdown("""
         **State**: (inventory, demand_regime, day, pending_order)
-        - Inventory: 0–20 units
+        - Inventory: 0-20 units
         - Demand: Low/Medium/High
-        - Actions: Order 0–5 units
+        - Actions: Order 0-5 units
         - Episode: 30 days
         """)
 
@@ -267,8 +293,8 @@ def main():
 
     if agent_type in ['Q-Learning', 'SARSA', 'Double Q-Learning'] and not is_loaded:
         st.warning(
-            f"⚠️ No trained model found for {agent_type}. "
-            f"Please run `python experiments/train.py` first.\n\n"
+            f"No trained model found for {agent_type}. "
+            f"Please run `py experiments/train.py` first. "
             f"Using untrained (random) Q-table."
         )
 
@@ -282,32 +308,32 @@ def main():
 
     # ─── Tabs ──────────────────────────────────────────────────
     tab1, tab2, tab3, tab4 = st.tabs([
-        "📈 Episode Simulation",
-        "📊 Policy Table & Heatmap",
-        "📉 Learning Curves",
-        "🏆 Agent Comparison"
+        "Episode Simulation",
+        "Policy & Heatmap",
+        "Learning Curves",
+        "Agent Comparison"
     ])
 
     # ═══════════════════════════════════════════════════════════
     # TAB 1: Episode Simulation
     # ═══════════════════════════════════════════════════════════
     with tab1:
-        st.subheader(f"Episode Simulation — {agent_type}")
+        st.subheader(f"Episode Simulation -- {agent_type}")
 
         # Metric cards
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
-            st.metric("💰 Total Profit", f"{summary['total_profit']:.1f}")
+            st.metric("Total Profit", f"{summary['total_profit']:.1f}")
         with col2:
-            st.metric("📦 Avg Inventory", f"{summary['avg_inventory']:.1f}")
+            st.metric("Avg Inventory", f"{summary['avg_inventory']:.1f}")
         with col3:
-            st.metric("🚫 Stockout Rate",
+            st.metric("Stockout Rate",
                        f"{summary['stockout_rate']:.1%}")
         with col4:
-            st.metric("🏷️ Holding Cost",
+            st.metric("Holding Cost",
                        f"{summary['total_holding_cost']:.1f}")
         with col5:
-            st.metric("🛒 Order Frequency",
+            st.metric("Order Frequency",
                        f"{summary['order_frequency']:.1%}")
 
         # Charts
@@ -316,30 +342,32 @@ def main():
         # Inventory chart
         fig_inv, ax_inv = plt.subplots(figsize=(12, 4))
         inventories = [s['inventory_after'] for s in steps]
-        ax_inv.fill_between(days, inventories, alpha=0.3, color='#51CF66')
-        ax_inv.plot(days, inventories, 'o-', color='#2B8A3E',
-                    linewidth=2, markersize=5)
-        ax_inv.axhline(y=5, color='red', linestyle='--', alpha=0.5,
-                       label='Reorder point')
+        ax_inv.fill_between(days, inventories, alpha=0.2,
+                            color=CHART_COLORS['inventory'])
+        ax_inv.plot(days, inventories, 'o-',
+                    color=CHART_COLORS['inventory'],
+                    linewidth=2, markersize=4)
+        ax_inv.axhline(y=5, color=COLOR_DANGER, linestyle='--',
+                       alpha=0.5, label='Reorder point')
         ax_inv.set_xlabel('Day')
         ax_inv.set_ylabel('Inventory')
-        ax_inv.set_title('📦 Inventory Level Over Time')
+        ax_inv.set_title('Inventory Level Over Time')
         ax_inv.legend()
         ax_inv.grid(True, alpha=0.3)
         st.pyplot(fig_inv)
         plt.close(fig_inv)
 
-        # Action chart
+        # Action + Demand charts
         col_a, col_b = st.columns(2)
 
         with col_a:
             fig_act, ax_act = plt.subplots(figsize=(10, 4))
             actions = [s['action'] for s in steps]
-            ax_act.bar(days, actions, color='#339AF0', alpha=0.8,
-                       edgecolor='white')
+            ax_act.bar(days, actions, color=CHART_COLORS['orders'],
+                       alpha=0.8, edgecolor='white')
             ax_act.set_xlabel('Day')
             ax_act.set_ylabel('Order Amount')
-            ax_act.set_title('🛒 Daily Orders')
+            ax_act.set_title('Daily Orders')
             ax_act.set_yticks(range(6))
             ax_act.grid(True, alpha=0.3)
             st.pyplot(fig_act)
@@ -349,33 +377,54 @@ def main():
             fig_dem, ax_dem = plt.subplots(figsize=(10, 4))
             demands = [s['demand'] for s in steps]
             stockouts = [s['stockout'] for s in steps]
-            ax_dem.bar(days, demands, color='#FFA94D', alpha=0.7,
-                       label='Demand')
-            ax_dem.bar(days, stockouts, color='#FF6B6B', alpha=0.9,
-                       label='Stockout')
+            ax_dem.bar(days, demands, color=CHART_COLORS['demand'],
+                       alpha=0.7, label='Demand')
+            ax_dem.bar(days, stockouts, color=CHART_COLORS['stockout'],
+                       alpha=0.9, label='Stockout')
             ax_dem.set_xlabel('Day')
             ax_dem.set_ylabel('Units')
-            ax_dem.set_title('📊 Demand & Stockouts')
+            ax_dem.set_title('Demand & Stockouts')
             ax_dem.legend()
             ax_dem.grid(True, alpha=0.3)
             st.pyplot(fig_dem)
             plt.close(fig_dem)
 
-        # Cumulative reward
-        fig_rew, ax_rew = plt.subplots(figsize=(12, 4))
-        cum_rewards = np.cumsum([s['reward'] for s in steps])
-        ax_rew.plot(days, cum_rewards, 'o-', color='#845EF7',
-                    linewidth=2, markersize=5)
-        ax_rew.fill_between(days, cum_rewards, alpha=0.2, color='#845EF7')
-        ax_rew.set_xlabel('Day')
-        ax_rew.set_ylabel('Cumulative Reward')
-        ax_rew.set_title('💰 Cumulative Reward Over Episode')
-        ax_rew.grid(True, alpha=0.3)
-        st.pyplot(fig_rew)
-        plt.close(fig_rew)
+        # Reward per day (instant reward) + Cumulative reward
+        col_r1, col_r2 = st.columns(2)
+
+        with col_r1:
+            fig_rd, ax_rd = plt.subplots(figsize=(10, 4))
+            rewards_daily = [s['reward'] for s in steps]
+            bar_colors = [COLOR_SUCCESS if r >= 0 else COLOR_DANGER
+                          for r in rewards_daily]
+            ax_rd.bar(days, rewards_daily, color=bar_colors, alpha=0.8,
+                      edgecolor='white')
+            ax_rd.axhline(y=0, color=COLOR_SLATE, linestyle='-',
+                          linewidth=0.8)
+            ax_rd.set_xlabel('Day')
+            ax_rd.set_ylabel('Reward')
+            ax_rd.set_title('Daily Reward (Instant)')
+            ax_rd.grid(True, alpha=0.3)
+            st.pyplot(fig_rd)
+            plt.close(fig_rd)
+
+        with col_r2:
+            fig_rew, ax_rew = plt.subplots(figsize=(10, 4))
+            cum_rewards = np.cumsum(rewards_daily)
+            ax_rew.plot(days, cum_rewards, 'o-',
+                        color=CHART_COLORS['cumulative'],
+                        linewidth=2, markersize=4)
+            ax_rew.fill_between(days, cum_rewards, alpha=0.15,
+                                color=CHART_COLORS['cumulative'])
+            ax_rew.set_xlabel('Day')
+            ax_rew.set_ylabel('Cumulative Reward')
+            ax_rew.set_title('Cumulative Reward')
+            ax_rew.grid(True, alpha=0.3)
+            st.pyplot(fig_rew)
+            plt.close(fig_rew)
 
         # Step-by-step table
-        with st.expander("📋 Step-by-Step Details", expanded=False):
+        with st.expander("Step-by-Step Details", expanded=False):
             import pandas as pd
             df = pd.DataFrame(steps)
             st.dataframe(df, use_container_width=True, height=400)
@@ -384,12 +433,13 @@ def main():
     # TAB 2: Policy Table & Heatmap
     # ═══════════════════════════════════════════════════════════
     with tab2:
-        st.subheader(f"Policy — {agent_type}")
+        st.subheader(f"Policy -- {agent_type}")
 
         pol_col1, pol_col2 = st.columns([1, 2])
 
         with pol_col1:
             st.markdown("#### Settings")
+
             pol_regime = st.selectbox(
                 "Demand Regime for Policy",
                 ['Low', 'Medium', 'High'],
@@ -429,16 +479,16 @@ def main():
         # Policy Heatmap
         st.markdown("#### Policy Heatmap")
         fig_heat, ax_heat = plt.subplots(figsize=(10, 12))
-        im = ax_heat.imshow(policy_table, cmap='YlOrRd', aspect='auto',
+        im = ax_heat.imshow(policy_table, cmap='Blues', aspect='auto',
                             origin='lower', vmin=0, vmax=5)
 
         for inv in range(21):
             for pending in range(6):
-                color = 'white' if policy_table[inv, pending] >= 3 else 'black'
-                ax_heat.text(pending, inv,
-                             str(policy_table[inv, pending]),
+                val = policy_table[inv, pending]
+                color = 'white' if val >= 3 else '#1E293B'
+                ax_heat.text(pending, inv, str(val),
                              ha='center', va='center',
-                             fontsize=9, color=color)
+                             fontsize=9, fontweight='bold', color=color)
 
         ax_heat.set_xlabel('Pending Order', fontsize=12)
         ax_heat.set_ylabel('Inventory Level', fontsize=12)
@@ -461,14 +511,14 @@ def main():
     # TAB 3: Learning Curves
     # ═══════════════════════════════════════════════════════════
     with tab3:
-        st.subheader("📉 Learning Curves")
+        st.subheader("Learning Curves")
 
         results_dir = os.path.join(PROJECT_ROOT, 'results')
         agent_names = ['q_learning', 'sarsa', 'double_q_learning']
         colors = {
-            'q_learning': '#51CF66',
-            'sarsa': '#339AF0',
-            'double_q_learning': '#845EF7'
+            'q_learning': '#3B82F6',
+            'sarsa': '#6366F1',
+            'double_q_learning': '#8B5CF6'
         }
         display_names = {
             'q_learning': 'Q-Learning',
@@ -531,8 +581,8 @@ def main():
             plt.close(fig_lc)
         else:
             st.info(
-                "📭 No training history found. "
-                "Run `python experiments/train.py` first."
+                "No training history found. "
+                "Run `py experiments/train.py` first."
             )
             plt.close(fig_lc)
 
@@ -566,7 +616,7 @@ def main():
     # TAB 4: Agent Comparison
     # ═══════════════════════════════════════════════════════════
     with tab4:
-        st.subheader("🏆 Agent Comparison")
+        st.subheader("Agent Comparison")
 
         eval_path = os.path.join(results_dir, 'evaluation_results.json')
 
@@ -601,8 +651,7 @@ def main():
                 agent_labels = list(main_agents.keys())
                 display_labels = [a.replace('_', ' ').title()
                                   for a in agent_labels]
-                bar_colors = ['#FF6B6B', '#FFA94D', '#FFD93D',
-                              '#51CF66', '#339AF0', '#845EF7']
+                bar_colors = AGENT_CHART_COLORS
 
                 fig_comp, axes = plt.subplots(2, 2, figsize=(14, 10))
                 fig_comp.suptitle('Agent Comparison — Key Metrics',
@@ -638,10 +687,10 @@ def main():
                 plt.close(fig_comp)
         else:
             st.info(
-                "📭 No evaluation results found. Run:\n\n"
+                "No evaluation results found. Run:\n\n"
                 "```bash\n"
-                "python experiments/train.py\n"
-                "python experiments/evaluate.py\n"
+                "py experiments/train.py\n"
+                "py experiments/evaluate.py\n"
                 "```"
             )
 

@@ -19,7 +19,7 @@ created: 2026-05-27
 | [[Workflow/Evaluation\|Evaluation]] | `py experiments/evaluate.py` | ~5 giây |
 | [[Workflow/Testing\|Testing]] | `py -m pytest tests/ -v` | <1 giây |
 | [[Workflow/Plotting\|Plotting]] | `py visualization/plots.py` | ~5 giây |
-| [[Workflow/Dashboard\|Dashboard]] | `streamlit run dashboard/app.py` | Server chạy liên tục |
+| [[Workflow/Dashboard\|Dashboard]] | `py -m streamlit run dashboard/app.py` | Server chạy liên tục |
 | [[Workflow/Sweep\|Sweep]] | `py experiments/sweep.py` | ~30 phút |
 
 ---

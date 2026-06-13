@@ -66,6 +66,8 @@ def evaluate_agent(agent, env, n_episodes=100, seed_offset=0):
         'episode_lengths': [],
         'total_stockout_units': [],
         'total_ordered': [],
+        'stockout_days': [],    # NEW: number of days with stockout
+        'success': [],          # NEW: 1 if profit > 0, else 0
     }
 
     episode_histories = []
@@ -93,6 +95,12 @@ def evaluate_agent(agent, env, n_episodes=100, seed_offset=0):
         metrics['total_stockout_units'].append(
             summary['total_stockout_units'])
         metrics['total_ordered'].append(summary['total_ordered'])
+        # NEW metrics
+        stockout_days = sum(
+            1 for s in env.episode_history if s['stockout'] > 0
+        )
+        metrics['stockout_days'].append(stockout_days)
+        metrics['success'].append(1 if summary['total_profit'] > 0 else 0)
         episode_histories.append(env.episode_history.copy())
 
     # Compute mean ± std for all metrics
@@ -136,7 +144,15 @@ def _print_results(name, results):
     print(f"  {'Stockout Penalty':<22s}  "
           f"{results.get('total_stockout_penalties_mean', 0):8.2f}  "
           f"+- {results.get('total_stockout_penalties_std', 0):6.2f}")
-
+    print(f"  {'Avg Steps':<22s}  "
+          f"{results.get('episode_lengths_mean', 0):8.1f}  "
+          f"+- {results.get('episode_lengths_std', 0):6.1f}")
+    print(f"  {'Stockout Days':<22s}  "
+          f"{results.get('stockout_days_mean', 0):8.2f}  "
+          f"+- {results.get('stockout_days_std', 0):6.2f}")
+    print(f"  {'Success Rate':<22s}  "
+          f"{results.get('success_mean', 0):8.4f}  "
+          f"+- {results.get('success_std', 0):6.4f}")
 
 def _average_seed_results(seed_results):
     """Average evaluation results across multiple seeds."""

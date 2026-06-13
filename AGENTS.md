@@ -278,7 +278,7 @@ py experiments/evaluate.py
 py visualization/plots.py
 
 # Dashboard demo
-streamlit run dashboard/app.py
+py -m streamlit run dashboard/app.py
 
 # Hyperparameter sweep
 py experiments/sweep.py
@@ -293,7 +293,7 @@ py experiments/sweep.py
 - [ ] Evaluation results có trong `results/evaluation_results.json`
 - [ ] Learning curves có trong `reports/figures/`
 - [ ] Policy heatmaps đã tạo
-- [ ] Dashboard chạy được (`streamlit run dashboard/app.py`)
+- [ ] Dashboard chạy được (`py -m streamlit run dashboard/app.py`)
 - [ ] README.md đầy đủ
 - [ ] Không dùng Gymnasium/Stable-Baselines/RLlib/CleanRL
 - [ ] Báo cáo có mean ± std trên 10 seeds

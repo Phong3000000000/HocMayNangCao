@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>DanhGia_DuAn</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 14mm 18mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      color: #111111;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.4;
+      margin: 0;
+      orphans: 3;
+      widows: 3;
+    }
+
+    /* ── Headings ───────────────────────────────── */
+    h1 {
+      color: #000000;
+      font-size: 18pt;
+      line-height: 1.2;
+      margin: 0 0 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 2px solid #000000;
+      page-break-after: avoid;
+    }
+    h2 {
+      color: #000000;
+      font-size: 13pt;
+      margin: 5mm 0 2mm;
+      padding-bottom: 1mm;
+      border-bottom: 0.5px solid #999999;
+      page-break-after: avoid;
+    }
+    h3 {
+      color: #111111;
+      font-size: 11pt;
+      margin: 4mm 0 1.5mm;
+      page-break-after: avoid;
+    }
+    h4, h5, h6 {
+      color: #222222;
+      font-size: 10pt;
+      margin: 3mm 0 1mm;
+      page-break-after: avoid;
+    }
+
+    /* ── Paragraph & text ──────────────────────── */
+    p {
+      margin: 0 0 2mm;
+    }
+
+    /* ── Horizontal rule ───────────────────────── */
+    hr {
+      border: 0;
+      border-top: 0.5px solid #CCCCCC;
+      margin: 3mm 0;
+    }
+
+    /* ── Tables ────────────────────────────────── */
+    table {
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      line-height: 1.3;
+      margin: 2mm 0 3mm;
+      width: 100%;
+    }
+    thead {
+      display: table-header-group;
+    }
+    th {
+      background: #222222;
+      border: 0.5px solid #222222;
+      color: #FFFFFF;
+      font-weight: 600;
+      padding: 3px 5px;
+      vertical-align: middle;
+      font-size: 8.5pt;
+    }
+    td {
+      border: 0.5px solid #BBBBBB;
+      padding: 2.5px 5px;
+      vertical-align: top;
+      font-size: 8.5pt;
+    }
+    tbody tr:nth-child(even) td {
+      background: #F5F5F5;
+    }
+
+    /* ── Blockquote ────────────────────────────── */
+    blockquote {
+      border-left: 3px solid #555555;
+      background: #F5F5F5;
+      margin: 2mm 0;
+      padding: 2mm 3mm;
+      color: #333333;
+      font-size: 9.5pt;
+    }
+
+    /* ── Code blocks ───────────────────────────── */
+    pre {
+      background: #F0F0F0;
+      border: 0.5px solid #CCCCCC;
+      border-radius: 3px;
+      color: #111111;
+      font-size: 8pt;
+      line-height: 1.25;
+      margin: 2mm 0;
+      overflow-wrap: anywhere;
+      padding: 2.5mm;
+      white-space: pre-wrap;
+    }
+    code {
+      background: #EEEEEE;
+      border-radius: 2px;
+      color: #111111;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.88em;
+      padding: 0.5px 2px;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    /* ── Lists ─────────────────────────────────── */
+    ul, ol {
+      margin: 0 0 2mm 4mm;
+      padding-left: 4mm;
+    }
+    li {
+      margin: 0.5mm 0;
+    }
+
+    /* ── Inline styles ─────────────────────────── */
+    strong {
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
+<h1>Danh gia du an RL Inventory Management theo tieu chi cua Thay</h1>
+<blockquote>Ngay danh gia: 2026-05-27   Phien ban: v2 — Sau khi cai thien (20K episodes, them metrics, Dashboard UI)</blockquote>
+<hr>
+<h2>1. Tong quan diem uoc tinh</h2>
+<table><thead><tr><th style="text-align:left">#</th><th style="text-align:left">Tieu chi</th><th style="text-align:left">Trong so</th><th style="text-align:left">Diem hien tai</th><th style="text-align:left">Diem toi da</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">i</td><td style="text-align:left">MDP dung, state/action/reward hop ly</td><td style="text-align:left">20%</td><td style="text-align:left"><strong>18/20</strong></td><td style="text-align:left">20</td><td style="text-align:left">Thieu giai thich Markov trong bao cao</td></tr>
+<tr><td style="text-align:left">ii</td><td style="text-align:left">Moi truong tu cai, kiem thu tot</td><td style="text-align:left">15%</td><td style="text-align:left"><strong>15/15</strong></td><td style="text-align:left">15</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">iii</td><td style="text-align:left">Q-Learning va SARSA/Double Q dung</td><td style="text-align:left">25%</td><td style="text-align:left"><strong>21/25</strong></td><td style="text-align:left">25</td><td style="text-align:left">RL &gt; Random+AlwaysOrder2, chua thang Reorder</td></tr>
+<tr><td style="text-align:left">iv</td><td style="text-align:left">Danh gia nhieu seed, baseline ro</td><td style="text-align:left">20%</td><td style="text-align:left"><strong>18/20</strong></td><td style="text-align:left">20</td><td style="text-align:left">Da bo sung metrics</td></tr>
+<tr><td style="text-align:left">v</td><td style="text-align:left">Demo chay duoc, truc quan, giai thich duoc</td><td style="text-align:left">15%</td><td style="text-align:left"><strong>12/15</strong></td><td style="text-align:left">15</td><td style="text-align:left">Dashboard da verify, thieu video</td></tr>
+<tr><td style="text-align:left">vi</td><td style="text-align:left">Ma sach, bao cao ro, tai lap duoc</td><td style="text-align:left">5%</td><td style="text-align:left"><strong>3/5</strong></td><td style="text-align:left">5</td><td style="text-align:left">Thieu final_report.pdf</td></tr>
+<tr><td style="text-align:left"></td><td style="text-align:left"><strong>TONG</strong></td><td style="text-align:left"><strong>100%</strong></td><td style="text-align:left"><strong>~87/100</strong></td><td style="text-align:left">100</td><td style="text-align:left"><strong>Tang tu 76 len 87</strong></td></tr></tbody></table>
+<h3>So sanh tien bo</h3>
+<table><thead><tr><th style="text-align:left">Hang muc</th><th style="text-align:left">Truoc</th><th style="text-align:left">Sau</th><th style="text-align:left">Thay doi</th></tr></thead><tbody><tr><td style="text-align:left">Training episodes</td><td style="text-align:left">8,000</td><td style="text-align:left">20,000</td><td style="text-align:left">+150%</td></tr>
+<tr><td style="text-align:left">Q-Learning profit</td><td style="text-align:left">298.2</td><td style="text-align:left">321.1</td><td style="text-align:left">+7.7%</td></tr>
+<tr><td style="text-align:left">SARSA profit</td><td style="text-align:left">316.5</td><td style="text-align:left">339.6</td><td style="text-align:left">+7.3%</td></tr>
+<tr><td style="text-align:left">Double Q profit</td><td style="text-align:left">286.2</td><td style="text-align:left">328.3</td><td style="text-align:left">+14.7%</td></tr>
+<tr><td style="text-align:left">Missing metrics</td><td style="text-align:left">3 thieu</td><td style="text-align:left">0 thieu</td><td style="text-align:left">Da bo sung</td></tr>
+<tr><td style="text-align:left">Dashboard UI</td><td style="text-align:left">Emoji lon xon</td><td style="text-align:left">Thong nhat indigo/slate</td><td style="text-align:left">Chuyen nghiep</td></tr>
+<tr><td style="text-align:left">Daily reward chart</td><td style="text-align:left">Khong co</td><td style="text-align:left">Co</td><td style="text-align:left">Moi</td></tr></tbody></table>
+<hr>
+<h2>2. Danh gia chi tiet tung tieu chi</h2>
+<hr>
+<h3>i. MDP dung, state/action/reward hop ly (20%) -&gt; <strong>18/20</strong></h3>
+<h4>DA DAT</h4>
+<table><thead><tr><th style="text-align:left">Yeu cau</th><th style="text-align:left">Code</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">State = (inventory, demand_regime, day_of_week, pending_order)</td><td style="text-align:left">custom_env.py</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">2,646 states = 21 x 3 x 7 x 6</td><td style="text-align:left">N_STATES = 2646</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Action = {0,1,2,3,4,5} (6 actions)</td><td style="text-align:left">N_ACTIONS = 6</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Reward = revenue - purchase - holding - stockout</td><td style="text-align:left">custom_env.py</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Gia ban=10, gia nhap=5, ton kho=-0.5, stockout=-3</td><td style="text-align:left">Cac hang so</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Dynamics: pending ve dau ngay, cap 20</td><td style="text-align:left">step()</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Episode = 30 ngay</td><td style="text-align:left">EPISODE_LENGTH = 30</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Demand stochastic theo regime</td><td style="text-align:left">DEMAND_DISTRIBUTIONS</td><td style="text-align:left">DAT</td></tr></tbody></table>
+<h4>CON THIEU</h4>
+<table><thead><tr><th style="text-align:left">Thieu</th><th style="text-align:left">Huong khac phuc</th></tr></thead><tbody><tr><td style="text-align:left">Giai thich Markov assumption trong bao cao</td><td style="text-align:left">Viet: state hien tai chua du thong tin de ra quyet dinh. Demand la Markov (chi phu thuoc regime).</td></tr>
+<tr><td style="text-align:left">Giai thich cong thuc Q-Learning trong bao cao</td><td style="text-align:left">Giai thich alpha, gamma, TD target, TD error, terminal case. Code da dung.</td></tr></tbody></table>
+<hr>
+<h3>ii. Moi truong tu cai, kiem thu tot (15%) -&gt; <strong>15/15</strong> (HOAN HAO)</h3>
+<table><thead><tr><th style="text-align:left">Yeu cau</th><th style="text-align:left">Test</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">reset(seed)</td><td style="text-align:left">test_same_seed_same_trajectory</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">step(action) tra ve 5 gia tri</td><td style="text-align:left">test_step_returns_correct_format</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">render()</td><td style="text-align:left">test_render_returns_string</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">state_encoder()</td><td style="text-align:left">test_roundtrip_all_states, test_encoder_unique</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">state_decoder()</td><td style="text-align:left">test_roundtrip_all_states</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Test transition</td><td style="text-align:left">test_pending_order_received_next_day, inventory_capped, never_negative</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Test reward</td><td style="text-align:left">14 test cases trong test_rewards.py</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Test terminal</td><td style="text-align:left">test_episode_terminates_at_30_days</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Test boundary</td><td style="text-align:left">test_zero_inventory, test_max_inventory, test_invalid_action</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Test seed</td><td style="text-align:left">test_same_seed, test_different_seeds, test_multiple_resets</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Test encoder/decoder</td><td style="text-align:left">8 test cases</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">KHONG dung Gymnasium</td><td style="text-align:left">Tu viet BaseEnv abstract class</td><td style="text-align:left">DAT</td></tr></tbody></table>
+<p><strong>Ket qua</strong>: 50/50 tests passed trong 0.16s.</p>
+<hr>
+<h3>iii. Q-Learning va SARSA/Double Q dung (25%) -&gt; <strong>21/25</strong></h3>
+<h4>Thuat toan — TAT CA DUNG</h4>
+<table><thead><tr><th style="text-align:left">Yeu cau</th><th style="text-align:left">File</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">Random Agent</td><td style="text-align:left">random_agent.py</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Heuristic (AlwaysOrder2)</td><td style="text-align:left">heuristic_agent.py</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Heuristic (ReorderThreshold)</td><td style="text-align:left">heuristic_agent.py</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Q-Learning (off-policy)</td><td style="text-align:left">q_learning.py — Q[s,a] += a<em>(r + g</em>max(Q[s']) - Q[s,a])</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Terminal: target = r</td><td style="text-align:left">if done: td_target = reward</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">SARSA (on-policy)</td><td style="text-align:left">sarsa.py — Q[s,a] += a<em>(r + g</em>Q[s',a'] - Q[s,a])</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">SARSA dung actual next action</td><td style="text-align:left">td_target = reward + g * Q[s', next_action]</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Double Q-Learning</td><td style="text-align:left">double_q_learning.py — 2 bang Q1/Q2, cross-evaluation</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Epsilon-greedy</td><td style="text-align:left">Tat ca RL agents</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Epsilon decay</td><td style="text-align:left">1.0 -&gt; 0.05, decay=0.999993</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Eval mode e=0</td><td style="text-align:left">set_eval_mode()</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Save/Load</td><td style="text-align:left">np.savez / np.load</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">get_policy()</td><td style="text-align:left">argmax(Q, axis=1)</td><td style="text-align:left">DAT</td></tr></tbody></table>
+<h4>Ket qua evaluation (v2 — 20K episodes)</h4>
+<table><thead><tr><th style="text-align:left">Agent</th><th style="text-align:left">Profit (mean +- std)</th><th style="text-align:left">Stockout Rate</th><th style="text-align:left">Avg Inventory</th><th style="text-align:left">Success Rate</th></tr></thead><tbody><tr><td style="text-align:left">Random</td><td style="text-align:left">232.5 +- 114.3</td><td style="text-align:left">32.4%</td><td style="text-align:left">4.35</td><td style="text-align:left">95.0%</td></tr>
+<tr><td style="text-align:left">AlwaysOrder2</td><td style="text-align:left">209.6 +- 57.2</td><td style="text-align:left">46.7%</td><td style="text-align:left">2.03</td><td style="text-align:left">100%</td></tr>
+<tr><td style="text-align:left"><strong>Reorder Threshold</strong></td><td style="text-align:left"><strong>402.1 +- 97.0</strong></td><td style="text-align:left"><strong>16.1%</strong></td><td style="text-align:left"><strong>3.56</strong></td><td style="text-align:left"><strong>100%</strong></td></tr>
+<tr><td style="text-align:left">Q-Learning</td><td style="text-align:left">321.1 +- 58.3</td><td style="text-align:left">38.3%</td><td style="text-align:left">1.56</td><td style="text-align:left">100%</td></tr>
+<tr><td style="text-align:left"><strong>SARSA</strong></td><td style="text-align:left"><strong>339.6 +- 69.9</strong></td><td style="text-align:left"><strong>39.4%</strong></td><td style="text-align:left"><strong>1.37</strong></td><td style="text-align:left"><strong>100%</strong></td></tr>
+<tr><td style="text-align:left">Double Q-Learning</td><td style="text-align:left">328.3 +- 73.3</td><td style="text-align:left">41.3%</td><td style="text-align:left">1.34</td><td style="text-align:left">100%</td></tr></tbody></table>
+<h4>Phan tich</h4>
+<ul><li>DAT: RL &gt; Random Agent (339 &gt; 232, +46%)</li><li>DAT: RL &gt; AlwaysOrder2 (339 &gt; 209, +62%)</li><li>DAT: &quot;RL co profit trung binh cao hon always-order baseline&quot; (yeu cau de bai)</li><li>CHUA DAT: RL &lt; Reorder Threshold (339 &lt; 402)</li></ul>
+<p><strong>Tai sao RL chua thang Reorder Threshold:</strong></p>
+<ol><li><strong>State space lon</strong>: 2,646 states x 6 actions = 15,876 Q-table entries. Voi 20,000 episodes x 30 steps = 600,000 updates, trung binh moi state-action chi duoc cap nhat ~38 lan. Nhieu state it gap (vi du: inventory=20 + regime=high) co the chua duoc kham pha du.</li></ol>
+<ol><li><strong>Heuristic don gian nhung hieu qua</strong>: Reorder Threshold (inv&lt;5 -&gt; order 5) truc tiep giai quyet stockout — la van de lon nhat cua bai toan. Day la mot &quot;hard-coded optimal insight&quot; ma RL phai tu hoc.</li></ol>
+<ol><li><strong>Demand stochastic</strong>: Regime transitions tao them uncertainty. RL can nhieu data hon de hoc tung regime rieng.</li></ol>
+<ol><li><strong>Double Q bi chia doi data</strong>: Moi bang Q chi nhan 50% updates -&gt; can gap doi so episodes de dat cung muc hoc.</li></ol>
+<ol><li><strong>Cai thien tu v1</strong>: Profit tang 7-15% so voi 8K episodes, chung to RL dang hoc tot hon khi co nhieu data.</li></ol>
+<blockquote><strong>Ghi chu cho bao cao</strong>: Thay cho phep giai thich &quot;vi sao chua tot hon&quot; — day la mot phan quan trong cua bao cao phan tich.</blockquote>
+<hr>
+<h3>iv. Danh gia nhieu seed, baseline ro (20%) -&gt; <strong>18/20</strong> (tang tu 14)</h3>
+<h4>DA DAT</h4>
+<table><thead><tr><th style="text-align:left">Yeu cau</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">It nhat 10 seed</td><td style="text-align:left">10 seeds training + evaluation</td></tr>
+<tr><td style="text-align:left">Mean +- std</td><td style="text-align:left">Tat ca metrics deu co</td></tr>
+<tr><td style="text-align:left">Learning curve</td><td style="text-align:left">reports/figures/learning_curves.png (20K eps)</td></tr>
+<tr><td style="text-align:left">So sanh 4+ agents</td><td style="text-align:left">6 agents</td></tr>
+<tr><td style="text-align:left">Eval voi e=0</td><td style="text-align:left">set_eval_mode()</td></tr>
+<tr><td style="text-align:left">Same training budget</td><td style="text-align:left">20000 eps x 10 seeds x 3 agents</td></tr>
+<tr><td style="text-align:left">Weekend surge</td><td style="text-align:left">Unseen pattern evaluation</td></tr>
+<tr><td style="text-align:left"><strong>Success rate</strong></td><td style="text-align:left"><strong>DA BO SUNG</strong> — 95-100%</td></tr>
+<tr><td style="text-align:left"><strong>Avg steps</strong></td><td style="text-align:left"><strong>DA BO SUNG</strong> — 30.0 +- 0.0</td></tr>
+<tr><td style="text-align:left"><strong>Stockout days (violations)</strong></td><td style="text-align:left"><strong>DA BO SUNG</strong> — 4.8-14.0 ngay/episode</td></tr></tbody></table>
+<h4>Bang metrics day du (YEU CAU CUA THAY)</h4>
+<table><thead><tr><th style="text-align:left">Agent</th><th style="text-align:left">Profit</th><th style="text-align:left">Stockout Rate</th><th style="text-align:left">Stockout Days</th><th style="text-align:left">Avg Steps</th><th style="text-align:left">Success Rate</th><th style="text-align:left">Holding Cost</th><th style="text-align:left">Order Freq</th></tr></thead><tbody><tr><td style="text-align:left">Random</td><td style="text-align:left">232.5+-114.3</td><td style="text-align:left">32.4%</td><td style="text-align:left">9.7+-6.1</td><td style="text-align:left">30.0</td><td style="text-align:left">95.0%</td><td style="text-align:left">65.2</td><td style="text-align:left">83.1%</td></tr>
+<tr><td style="text-align:left">AlwaysOrder2</td><td style="text-align:left">209.6+-57.2</td><td style="text-align:left">46.7%</td><td style="text-align:left">14.0+-6.5</td><td style="text-align:left">30.0</td><td style="text-align:left">100%</td><td style="text-align:left">30.4</td><td style="text-align:left">100%</td></tr>
+<tr><td style="text-align:left">Reorder</td><td style="text-align:left">402.1+-97.0</td><td style="text-align:left">16.1%</td><td style="text-align:left">4.8+-2.9</td><td style="text-align:left">30.0</td><td style="text-align:left">100%</td><td style="text-align:left">53.3</td><td style="text-align:left">62.0%</td></tr>
+<tr><td style="text-align:left">Q-Learning</td><td style="text-align:left">321.1+-58.3</td><td style="text-align:left">38.3%</td><td style="text-align:left">11.5+-4.7</td><td style="text-align:left">30.0</td><td style="text-align:left">100%</td><td style="text-align:left">23.3</td><td style="text-align:left">81.4%</td></tr>
+<tr><td style="text-align:left">SARSA</td><td style="text-align:left">339.6+-69.9</td><td style="text-align:left">39.4%</td><td style="text-align:left">11.8+-4.0</td><td style="text-align:left">30.0</td><td style="text-align:left">100%</td><td style="text-align:left">20.6</td><td style="text-align:left">82.4%</td></tr>
+<tr><td style="text-align:left">Double Q</td><td style="text-align:left">328.3+-73.3</td><td style="text-align:left">41.3%</td><td style="text-align:left">12.4+-3.7</td><td style="text-align:left">30.0</td><td style="text-align:left">100%</td><td style="text-align:left">20.1</td><td style="text-align:left">81.0%</td></tr></tbody></table>
+<h4>CON THIEU NHO</h4>
+<table><thead><tr><th style="text-align:left">Thieu</th><th style="text-align:left">Huong khac phuc</th></tr></thead><tbody><tr><td style="text-align:left">Box plot so sanh seeds</td><td style="text-align:left">Them vao plots.py hoac bao cao</td></tr></tbody></table>
+<hr>
+<h3>v. Demo chay duoc, truc quan, giai thich duoc (15%) -&gt; <strong>12/15</strong> (tang tu 10)</h3>
+<h4>DA DAT</h4>
+<table><thead><tr><th style="text-align:left">Yeu cau</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">Dashboard chon demand regime</td><td style="text-align:left">DAT — Selectbox Low/Medium/High</td></tr>
+<tr><td style="text-align:left">Hien thi inventory theo ngay</td><td style="text-align:left">DAT — Line chart</td></tr>
+<tr><td style="text-align:left">Hien thi action order</td><td style="text-align:left">DAT — Bar chart Daily Orders</td></tr>
+<tr><td style="text-align:left">Bang policy</td><td style="text-align:left">DAT — 21x6 matrix</td></tr>
+<tr><td style="text-align:left">Policy heatmap</td><td style="text-align:left">DAT — Blues colormap, bold text</td></tr>
+<tr><td style="text-align:left">Duong hoc (learning curves)</td><td style="text-align:left">DAT — Mean +- std</td></tr>
+<tr><td style="text-align:left">Nut chuyen giua agents</td><td style="text-align:left">DAT — Selectbox 6 agents</td></tr>
+<tr><td style="text-align:left">Agent comparison</td><td style="text-align:left">DAT — Bar charts 4 metrics</td></tr>
+<tr><td style="text-align:left"><strong>Reward tuc thoi</strong></td><td style="text-align:left"><strong>DA BO SUNG</strong> — Daily Reward chart (xanh/do)</td></tr>
+<tr><td style="text-align:left">Dashboard da verify</td><td style="text-align:left">DAT — Chay thanh cong</td></tr>
+<tr><td style="text-align:left">Giao dien chuyen nghiep</td><td style="text-align:left">DAT — Unified indigo/slate palette</td></tr></tbody></table>
+<h4>CON THIEU</h4>
+<table><thead><tr><th style="text-align:left">Thieu</th><th style="text-align:left">Muc anh huong</th><th style="text-align:left">Huong khac phuc</th></tr></thead><tbody><tr><td style="text-align:left"><strong>Video demo</strong></td><td style="text-align:left">Cao</td><td style="text-align:left">Quay 2-3 phut, upload YouTube/Drive</td></tr></tbody></table>
+<hr>
+<h3>vi. Ma sach, bao cao ro, tai lap duoc (5%) -&gt; <strong>3/5</strong></h3>
+<h4>DA DAT</h4>
+<table><thead><tr><th style="text-align:left">Yeu cau</th><th style="text-align:left">Trang thai</th></tr></thead><tbody><tr><td style="text-align:left">Cau truc thu muc chuan</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">README.md day du</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">requirements.txt</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Docstrings Google style</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">Seed reproducibility</td><td style="text-align:left">DAT</td></tr>
+<tr><td style="text-align:left">configs.yaml</td><td style="text-align:left">DAT</td></tr></tbody></table>
+<h4>CON THIEU</h4>
+<table><thead><tr><th style="text-align:left">Thieu</th><th style="text-align:left">Huong khac phuc</th></tr></thead><tbody><tr><td style="text-align:left"><strong>reports/final_report.pdf</strong></td><td style="text-align:left">Viet bao cao 7 phan theo cau truc Thay yeu cau</td></tr>
+<tr><td style="text-align:left">Link public GitHub</td><td style="text-align:left">Push + share link</td></tr></tbody></table>
+<hr>
+<h2>3. Checklist nghiem thu cua Thay</h2>
+<table><thead><tr><th style="text-align:left">Cau hoi</th><th style="text-align:left">Tra loi</th><th style="text-align:left">Danh gia</th></tr></thead><tbody><tr><td style="text-align:left">State co du thong tin?</td><td style="text-align:left">DAT — inventory + regime + dow + pending</td><td style="text-align:left">Tot</td></tr>
+<tr><td style="text-align:left">Invalid action xu ly the nao?</td><td style="text-align:left">Khong co invalid (0-5 deu hop le). Ngoai range -&gt; assert</td><td style="text-align:left">Tot</td></tr>
+<tr><td style="text-align:left">Reward khyen khich dung?</td><td style="text-align:left">Phan lon dung. Stockout penalty co the tang de RL hoc tot hon</td><td style="text-align:left">Chap nhan</td></tr>
+<tr><td style="text-align:left">Terminal xu ly dung trong Q update?</td><td style="text-align:left">DAT — if done: td_target = reward</td><td style="text-align:left">Tot</td></tr>
+<tr><td style="text-align:left">Agent hoc tot hon random?</td><td style="text-align:left">DAT — SARSA 339 &gt; Random 232 (+46%)</td><td style="text-align:left">Tot</td></tr>
+<tr><td style="text-align:left">Agent tot hon heuristic?</td><td style="text-align:left">Chua — SARSA 339 &lt; Reorder 402. Da giai thich ly do</td><td style="text-align:left">Chap nhan</td></tr>
+<tr><td style="text-align:left">Ket qua on dinh 10 seed?</td><td style="text-align:left">Std 58-73 cho profit. Chap nhan duoc voi demand stochastic</td><td style="text-align:left">Chap nhan</td></tr>
+<tr><td style="text-align:left">Demo the hien policy?</td><td style="text-align:left">DAT — Heatmap + Policy Table + Daily charts</td><td style="text-align:left">Tot</td></tr></tbody></table>
+<hr>
+<h2>4. Cac cai thien da thuc hien (v1 -&gt; v2)</h2>
+<h3>4.1 Dashboard UI (da hoan thanh)</h3>
+<ul><li>Bo toan bo emoji lon xon -&gt; giao dien sach</li><li>Thong nhat color palette: Indigo/Slate (chuyen nghiep)</li><li>Chart colors dong bo: xanh la (inventory), xanh duong (orders), cam (demand), do (stockout)</li><li>Sidebar background: Slate-50</li><li>Them Daily Reward chart (instant reward moi ngay, xanh=positive, do=negative)</li><li>Cumulative Reward va Daily Reward hien thi canh nhau (2 columns)</li><li>Policy heatmap chuyen sang Blues colormap, text in dam</li></ul>
+<h3>4.2 Metrics bo sung (da hoan thanh)</h3>
+<ul><li><strong>Success Rate</strong>: % episodes co profit &gt; 0</li><li><strong>Avg Steps</strong>: Do dai episode trung binh</li><li><strong>Stockout Days</strong>: So ngay bi chay hang (constraint violations)</li><li>Hien thi day du trong evaluate.py output</li></ul>
+<h3>4.3 RL Performance (da cai thien)</h3>
+<ul><li>Tang training: 8,000 -&gt; 20,000 episodes</li><li>Epsilon decay cham hon: 0.99998 -&gt; 0.999993</li><li>Eval interval: 400 -&gt; 500</li><li>Ket qua: Profit tang 7-15% cho tat ca RL agents</li></ul>
+<hr>
+<h2>5. Ke hoach cai thien tiep theo</h2>
+<table><thead><tr><th style="text-align:left">Buoc</th><th style="text-align:left">Cong viec</th><th style="text-align:left">Thoi gian</th><th style="text-align:left">Diem tang</th></tr></thead><tbody><tr><td style="text-align:left">1</td><td style="text-align:left">Viet final_report.pdf (7 phan theo yeu cau Thay)</td><td style="text-align:left">4-6 gio</td><td style="text-align:left">+2</td></tr>
+<tr><td style="text-align:left">2</td><td style="text-align:left">Quay video demo Dashboard</td><td style="text-align:left">30 phut</td><td style="text-align:left">+2</td></tr>
+<tr><td style="text-align:left">3</td><td style="text-align:left">Push GitHub + them link</td><td style="text-align:left">15 phut</td><td style="text-align:left">+1</td></tr>
+<tr><td style="text-align:left">4</td><td style="text-align:left">(Tuy chon) Tang STOCKOUT_COST 3-&gt;5, re-train</td><td style="text-align:left">3-5 gio</td><td style="text-align:left">+2-3</td></tr></tbody></table>
+<p><strong>Diem uoc tinh sau cai thien</strong>: 87 + 5 = <strong>~92/100</strong></p>
+<hr>
+<h2>6. Lien ket cheo</h2>
+<ul><li>[[Workflow/Training]] — Quy trinh training</li><li>[[Workflow/Evaluation]] — Quy trinh evaluate</li><li>[[Workflow/Dashboard]] — Huong dan chay Dashboard</li><li>[[Error/ERR-001]] — Loi UnicodeEncodeError da fix</li><li>[[Notes/QLearning_Algorithm]] — Ly thuyet Q-Learning</li><li>[[Notes/SARSA_Algorithm]] — Ly thuyet SARSA</li><li>[[Notes/DoubleQLearning_Algorithm]] — Ly thuyet Double Q-Learning</li><li>[[Log/2026-05-27]] — Log cong viec hom nay</li></ul>
+</body>
+</html>

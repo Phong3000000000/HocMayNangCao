@@ -980,11 +980,12 @@ HTML_TEMPLATE = r"""
                             <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 6px; font-weight: 500;">Tông màu chủ đề (Theme Color)</label>
                             <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                                 <input type="color" id="styleThemeColor" value="#0f3460" style="border: none; width: 36px; height: 32px; border-radius: var(--radius-sm); cursor: pointer; background: transparent; padding: 0; flex-shrink: 0;" oninput="applyStyles()">
+                                <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #222222; color: white; height: 32px; border: none; min-width: 40px;" onclick="setQuickColor('#222222')">B&W</button>
                                 <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #0f3460; color: white; height: 32px; border: none; min-width: 50px;" onclick="setQuickColor('#0f3460')">Navy</button>
                                 <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #00b894; color: white; height: 32px; border: none; min-width: 50px;" onclick="setQuickColor('#00b894')">Green</button>
                                 <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #e94560; color: white; height: 32px; border: none; min-width: 50px;" onclick="setQuickColor('#e94560')">Rose</button>
                                 <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #2a2a5a; color: white; height: 32px; border: none; min-width: 50px;" onclick="setQuickColor('#2a2a5a')">Dark</button>
-                                <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #a91d22; color: white; height: 32px; border: none; min-width: 60px;" onclick="setQuickColor('#a91d22')">Đỏ Vàng</button>
+                                <button type="button" class="btn" style="padding: 0 4px; font-size: 11px; flex: 1; background: #a91d22; color: white; height: 32px; border: none; min-width: 60px;" onclick="setQuickColor('#a91d22')">Red</button>
                             </div>
                         </div>
 

@@ -2,41 +2,30 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
+// ─── Configuration ───────────────────────────────────────────
 const root = process.cwd();
-const outputDir = path.join(root, "ObsidianVault", "_log", "19_05_2026");
 const tmpDir = path.join(root, "tmp", "pdfs");
-const logSourceDir = path.join(root, "ObsidianVault", "_log", "19_05_2026");
-const fallbackSourceDir = path.join(root, "user_guide");
 
-function sourceFile(fileName) {
-  const logPath = path.join(logSourceDir, fileName);
-  if (fs.existsSync(logPath)) {
-    return logPath;
-  }
-  return path.join(fallbackSourceDir, fileName);
+// Accept input files from command line arguments
+const requestedFiles = process.argv.slice(2);
+if (requestedFiles.length === 0) {
+  console.log("Usage: node tools/md_to_pdf.js <file1.md> [file2.md] ...");
+  console.log("Example: node tools/md_to_pdf.js README.md");
+  console.log("         node tools/md_to_pdf.js HocMayNCVault/Notes/DanhGia_DuAn.md");
+  process.exit(1);
 }
 
-const defaultDocuments = [
-  {
-    input: sourceFile("GHD_HR_0204_User_Guide_v1.md"),
-    output: path.join(outputDir, "GHD_HR_0204_User_Guide_v1.pdf"),
-  },
-  {
-    input: sourceFile("GHD_HR_0205_User_Guide_v1.md"),
-    output: path.join(outputDir, "GHD_HR_0205_User_Guide_v1.pdf"),
-  },
-];
+const documents = requestedFiles.map((filePath) => {
+  const resolved = path.resolve(root, filePath);
+  const baseName = path.basename(resolved, ".md");
+  const outputDir = path.dirname(resolved);
+  return {
+    input: resolved,
+    output: path.join(outputDir, `${baseName}.pdf`),
+  };
+});
 
-const requestedFiles = process.argv.slice(2);
-const documents = requestedFiles.length
-  ? requestedFiles.map((fileName) => {
-      const normalized = fileName.endsWith(".md") ? fileName : `${fileName}.md`;
-      return {
-        input: sourceFile(normalized),
-        output: path.join(outputDir, `${path.basename(normalized, ".md")}.pdf`),
-      };
-    })
-  : defaultDocuments;
+// ─── HTML Helpers ────────────────────────────────────────────
 
 function escapeHtml(value) {
   return value
@@ -120,6 +109,15 @@ function renderMarkdown(markdown) {
   const lines = markdown.replace(/^\uFEFF/, "").split(/\r?\n/);
   const html = [];
   let i = 0;
+
+  // Skip YAML frontmatter
+  if (lines[0] && lines[0].trim() === "---") {
+    i = 1;
+    while (i < lines.length && lines[i].trim() !== "---") {
+      i += 1;
+    }
+    i += 1; // skip closing ---
+  }
 
   while (i < lines.length) {
     const line = lines[i];
@@ -205,104 +203,148 @@ function renderMarkdown(markdown) {
   return html.join("\n");
 }
 
+// ─── CSS (grayscale, optimized for PDF) ──────────────────────
 function css() {
   return `
-    @page { size: A4; margin: 14mm 13mm 16mm; }
+    @page {
+      size: A4;
+      margin: 15mm 14mm 18mm;
+    }
     * { box-sizing: border-box; }
     body {
-      color: #1f2933;
+      color: #111111;
       font-family: "Segoe UI", Arial, sans-serif;
-      font-size: 10.5pt;
-      line-height: 1.5;
+      font-size: 10pt;
+      line-height: 1.4;
       margin: 0;
+      orphans: 3;
+      widows: 3;
     }
+
+    /* ── Headings ───────────────────────────────── */
     h1 {
-      color: #b11f1f;
-      font-size: 22pt;
-      line-height: 1.16;
-      margin: 0 0 5mm;
-      padding-bottom: 4mm;
-      border-bottom: 3px solid #f2c94c;
+      color: #000000;
+      font-size: 18pt;
+      line-height: 1.2;
+      margin: 0 0 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 2px solid #000000;
+      page-break-after: avoid;
     }
     h2 {
-      color: #8b1e1e;
-      font-size: 16pt;
-      margin: 8mm 0 3mm;
-      break-after: avoid;
+      color: #000000;
+      font-size: 13pt;
+      margin: 5mm 0 2mm;
+      padding-bottom: 1mm;
+      border-bottom: 0.5px solid #999999;
+      page-break-after: avoid;
     }
     h3 {
-      color: #27313f;
-      font-size: 12.5pt;
-      margin: 6mm 0 2mm;
-      break-after: avoid;
+      color: #111111;
+      font-size: 11pt;
+      margin: 4mm 0 1.5mm;
+      page-break-after: avoid;
     }
     h4, h5, h6 {
-      color: #374151;
-      font-size: 11pt;
-      margin: 4mm 0 2mm;
-      break-after: avoid;
+      color: #222222;
+      font-size: 10pt;
+      margin: 3mm 0 1mm;
+      page-break-after: avoid;
     }
-    p { margin: 0 0 3.2mm; }
+
+    /* ── Paragraph & text ──────────────────────── */
+    p {
+      margin: 0 0 2mm;
+    }
+
+    /* ── Horizontal rule ───────────────────────── */
     hr {
       border: 0;
-      border-top: 1px solid #d8dee7;
-      margin: 5mm 0;
+      border-top: 0.5px solid #CCCCCC;
+      margin: 3mm 0;
     }
+
+    /* ── Tables ────────────────────────────────── */
     table {
       border-collapse: collapse;
-      font-size: 9.3pt;
-      margin: 4mm 0 6mm;
+      font-size: 8.5pt;
+      line-height: 1.3;
+      margin: 2mm 0 3mm;
       width: 100%;
-      break-inside: avoid;
     }
-    thead { display: table-header-group; }
+    thead {
+      display: table-header-group;
+    }
     th {
-      background: #b11f1f;
-      border: 1px solid #8f1717;
-      color: #ffffff;
-      font-weight: 700;
-      padding: 7px 8px;
-      vertical-align: top;
+      background: #222222;
+      border: 0.5px solid #222222;
+      color: #FFFFFF;
+      font-weight: 600;
+      padding: 3px 5px;
+      vertical-align: middle;
+      font-size: 8.5pt;
     }
     td {
-      border: 1px solid #d5dbe5;
-      padding: 6px 8px;
+      border: 0.5px solid #BBBBBB;
+      padding: 2.5px 5px;
       vertical-align: top;
+      font-size: 8.5pt;
     }
-    tbody tr:nth-child(even) td { background: #f7f9fc; }
+    tbody tr:nth-child(even) td {
+      background: #F5F5F5;
+    }
+
+    /* ── Blockquote ────────────────────────────── */
     blockquote {
-      border-left: 4px solid #f2c94c;
-      background: #fff8df;
-      margin: 4mm 0;
-      padding: 3mm 4mm;
+      border-left: 3px solid #555555;
+      background: #F5F5F5;
+      margin: 2mm 0;
+      padding: 2mm 3mm;
+      color: #333333;
+      font-size: 9.5pt;
     }
+
+    /* ── Code blocks ───────────────────────────── */
     pre {
-      background: #111827;
-      border-radius: 6px;
-      color: #f9fafb;
-      font-size: 8.7pt;
-      line-height: 1.35;
-      margin: 4mm 0;
+      background: #F0F0F0;
+      border: 0.5px solid #CCCCCC;
+      border-radius: 3px;
+      color: #111111;
+      font-size: 8pt;
+      line-height: 1.25;
+      margin: 2mm 0;
       overflow-wrap: anywhere;
-      padding: 4mm;
+      padding: 2.5mm;
       white-space: pre-wrap;
     }
     code {
-      background: #eef2f7;
-      border-radius: 3px;
-      color: #111827;
+      background: #EEEEEE;
+      border-radius: 2px;
+      color: #111111;
       font-family: Consolas, "Courier New", monospace;
-      font-size: 0.92em;
-      padding: 1px 4px;
+      font-size: 0.88em;
+      padding: 0.5px 2px;
     }
     pre code {
       background: transparent;
       color: inherit;
       padding: 0;
+      font-size: inherit;
     }
-    ul, ol { margin: 0 0 3.5mm 5mm; padding-left: 5mm; }
-    li { margin: 1.2mm 0; }
-    strong { color: #111827; }
+
+    /* ── Lists ─────────────────────────────────── */
+    ul, ol {
+      margin: 0 0 2mm 4mm;
+      padding-left: 4mm;
+    }
+    li {
+      margin: 0.5mm 0;
+    }
+
+    /* ── Inline styles ─────────────────────────── */
+    strong {
+      color: #000000;
+    }
   `;
 }
 
@@ -321,30 +363,40 @@ ${renderMarkdown(markdown)}
 </html>`;
 }
 
-function edgePath() {
+// ─── Browser detection ───────────────────────────────────────
+function browserPath() {
   const candidates = [
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
     "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
-    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   ];
-  return candidates.find((candidate) => fs.existsSync(candidate));
+  return candidates.find((c) => fs.existsSync(c));
 }
 
-fs.mkdirSync(outputDir, { recursive: true });
+// ─── Main ────────────────────────────────────────────────────
 fs.mkdirSync(tmpDir, { recursive: true });
 
-const browser = edgePath();
+const browser = browserPath();
 if (!browser) {
-  throw new Error("No Chrome or Edge executable found for headless PDF rendering.");
+  console.error("ERROR: No Chrome or Edge found for headless PDF rendering.");
+  process.exit(1);
 }
 
+console.log(`Using browser: ${path.basename(browser)}`);
+console.log(`Converting ${documents.length} file(s)...\n`);
+
 for (const doc of documents) {
+  if (!fs.existsSync(doc.input)) {
+    console.error(`  SKIP: ${doc.input} (file not found)`);
+    continue;
+  }
+
   const markdown = fs.readFileSync(doc.input, "utf8");
   const htmlPath = path.join(tmpDir, `${path.basename(doc.input, ".md")}.html`);
   fs.writeFileSync(htmlPath, renderHtml(markdown, doc.input), "utf8");
 
   const result = spawnSync(browser, [
-    "--headless",
     "--headless=new",
     "--disable-gpu",
     "--disable-software-rasterizer",
@@ -357,7 +409,10 @@ for (const doc of documents) {
   ], { stdio: "inherit" });
 
   if (result.status !== 0) {
-    throw new Error(`PDF render failed for ${doc.input}`);
+    console.error(`  FAILED: ${doc.input}`);
+  } else {
+    console.log(`  OK: ${doc.output}`);
   }
-  console.log(`Created ${doc.output}`);
 }
+
+console.log("\nDone.");

@@ -34,6 +34,15 @@ r = revenue - purchase_cost - holding_cost - stockout_penalty
 - [[Notes/QLearning_Algorithm|📓 Thuật toán Q-Learning]] — Off-policy Temporal Difference Control.
 - [[Notes/SARSA_Algorithm|📓 Thuật toán SARSA]] — On-policy Temporal Difference Control.
 - [[Notes/DoubleQLearning_Algorithm|📓 Thuật toán Double Q-Learning]] — Khắc phục lỗi phóng đại giá trị (overestimation bias).
+- [[Notes/BaoCao_ChiTiet_HeThong|📓 Báo cáo Chi tiết Hệ thống]] — Tài liệu đối chiếu chi tiết mã nguồn và yêu cầu bắt buộc của Thầy.
+
+## Hướng dẫn tổng quan
+
+- [[Notes/HuongDan_ChiTiet_ToanBo_DuAn|📘 Hướng dẫn chi tiết toàn bộ dự án (cho người mới)]] — Giải thích từ A-Z: input/output, dữ liệu, công thức, code, sơ đồ liên kết file.
+
+## Đánh giá & Phân tích
+
+- [[Notes/DanhGia_DuAn|📊 Đánh giá dự án theo tiêu chí của Thầy]] — Checklist chi tiết, điểm hiện tại (~76/100), kế hoạch cải thiện.
 
 ## Tags
 - `#note/idea` — Ý tưởng mới

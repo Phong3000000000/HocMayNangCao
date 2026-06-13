@@ -19,6 +19,9 @@ created: 2026-05-27
 
 ## Recent Logs
 
+- [[Log/2026-06-10|2026-06-10 — Tạo hướng dẫn chi tiết toàn bộ dự án cho người mới]]
+- [[Log/2026-06-09|2026-06-09 — Hướng dẫn chạy dự án & Kiểm thử]]
+- [[Log/2026-06-08|2026-06-08 — Đối chiếu mã nguồn & Yêu cầu đề tài]]
 - [[Log/2026-05-27|2026-05-27 — Khởi tạo dự án]]
 
 ---

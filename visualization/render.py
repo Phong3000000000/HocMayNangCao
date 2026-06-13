@@ -38,10 +38,10 @@ def render_episode(agent, env, seed=42, max_steps=None):
     total_reward = 0.0
     done = False
 
-    print(f"\n{'╔' + '═'*58 + '╗'}")
-    print(f"║{'INVENTORY MANAGEMENT — EPISODE RENDER':^58s}║")
-    print(f"║{'Agent: ' + agent.name:^58s}║")
-    print(f"{'╚' + '═'*58 + '╝'}")
+    print(f"\n{'+' + '-'*58 + '+'}")
+    print(f"|{'INVENTORY MANAGEMENT - EPISODE RENDER':^58s}|")
+    print(f"|{'Agent: ' + agent.name:^58s}|")
+    print(f"{'+' + '-'*58 + '+'}")
 
     while not done:
         # Decode current state for display
@@ -59,19 +59,19 @@ def render_episode(agent, env, seed=42, max_steps=None):
 
         step += 1
 
-        # ── Render this step ───────────────────────────────────
+        # -- Render this step (ASCII only) ----------------------
         # Inventory bar
-        bar_filled = '█' * min(info['inventory_after'], 20)
-        bar_empty = '░' * (20 - min(info['inventory_after'], 20))
+        bar_filled = '#' * min(info['inventory_after'], 20)
+        bar_empty = '-' * (20 - min(info['inventory_after'], 20))
 
-        print(f"\n  Day {step:2d} ({day_name}) │ Regime: {regime_name}")
-        print(f"  {'─'*50}")
+        print(f"\n  Day {step:2d} ({day_name}) | Regime: {regime_name}")
+        print(f"  {'-'*50}")
         print(f"  Inventory (start): {inv:2d} + Pending: {pending} "
-              f"→ {min(inv + pending, 20):2d}")
+              f"-> {min(inv + pending, 20):2d}")
         print(f"  Action:  Order {action} units  "
               f"(cost: {info['purchase_cost']:.0f})")
-        print(f"  Demand:  {info['demand']} units  │  "
-              f"Sold: {info['sold']}  │  "
+        print(f"  Demand:  {info['demand']} units  |  "
+              f"Sold: {info['sold']}  |  "
               f"Stockout: {info['stockout']}")
         print(f"  Inventory (end): [{bar_filled}{bar_empty}] "
               f"{info['inventory_after']:2d}/20")
@@ -88,9 +88,9 @@ def render_episode(agent, env, seed=42, max_steps=None):
 
     # ── Episode summary ────────────────────────────────────────
     summary = env.get_episode_summary()
-    print(f"\n{'═'*58}")
+    print(f"\n{'='*58}")
     print(f"  EPISODE SUMMARY ({step} days)")
-    print(f"{'─'*58}")
+    print(f"{'-'*58}")
     print(f"  Total Profit:        {summary['total_profit']:8.2f}")
     print(f"  Total Revenue:       {summary['total_revenue']:8.2f}")
     print(f"  Total Purchase Cost: {summary['total_purchase_cost']:8.2f}")
@@ -99,7 +99,7 @@ def render_episode(agent, env, seed=42, max_steps=None):
     print(f"  Stockout Rate:       {summary['stockout_rate']:8.2%}")
     print(f"  Order Frequency:     {summary['order_frequency']:8.2%}")
     print(f"  Avg Inventory:       {summary['avg_inventory']:8.2f}")
-    print(f"{'═'*58}")
+    print(f"{'='*58}")
 
     agent.set_train_mode()
     return env.episode_history

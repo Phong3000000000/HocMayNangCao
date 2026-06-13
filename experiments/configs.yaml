@@ -4,9 +4,9 @@
 
 # --- Training Settings ------------------------------------------
 training:
-  n_episodes: 8000        # Total training episodes per seed
+  n_episodes: 20000       # Total training episodes per seed
   n_seeds: 10             # Number of random seeds for evaluation
-  eval_interval: 400      # Evaluate every N episodes during training
+  eval_interval: 500      # Evaluate every N episodes during training
   eval_episodes: 30       # Episodes per evaluation checkpoint
   save_models: true       # Whether to save trained Q-tables
 
@@ -17,21 +17,21 @@ agents:
     gamma: 0.99           # Discount factor
     epsilon_start: 1.0    # Initial exploration rate
     epsilon_end: 0.05     # Minimum exploration rate
-    epsilon_decay: 0.99998 # Per-step decay (reaches 0.05 around ep 5000)
+    epsilon_decay: 0.999993 # Per-step decay (slower for better exploration)
 
   sarsa:
     alpha: 0.15
     gamma: 0.99
     epsilon_start: 1.0
     epsilon_end: 0.05
-    epsilon_decay: 0.99998
+    epsilon_decay: 0.999993
 
   double_q_learning:
     alpha: 0.15
     gamma: 0.99
     epsilon_start: 1.0
     epsilon_end: 0.05
-    epsilon_decay: 0.99998
+    epsilon_decay: 0.999993
 
 # --- Environment Settings --------------------------------------
 environment:
