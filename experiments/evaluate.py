@@ -18,6 +18,7 @@ import sys
 import yaml
 import numpy as np
 import json
+import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -168,9 +169,14 @@ def _average_seed_results(seed_results):
     return avg
 
 
-def run_evaluation(config=None):
+def run_evaluation(config=None, results_dir_override=None):
     """
     Run the full evaluation pipeline.
+
+    Args:
+        config: Configuration dict. If None, loads from configs.yaml.
+        results_dir_override (str, optional): Custom results directory.
+            If provided, reads models from and saves evaluation to this dir.
 
     Steps:
         1. Evaluate baselines (Random, AlwaysOrder2, ReorderThreshold)
@@ -185,10 +191,14 @@ def run_evaluation(config=None):
     n_eval_episodes = eval_cfg['n_episodes']
     n_seeds = config['training']['n_seeds']
 
-    results_dir = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), 'results'
-    )
+    if results_dir_override:
+        results_dir = results_dir_override
+    else:
+        results_dir = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'results'
+        )
     os.makedirs(results_dir, exist_ok=True)
+    print(f"  Results directory: {results_dir}")
 
     env = InventoryEnv(regime_transitions=True)
     n_states = env.N_STATES
@@ -334,4 +344,18 @@ def run_evaluation(config=None):
 
 
 if __name__ == '__main__':
-    run_evaluation()
+    parser = argparse.ArgumentParser(
+        description='Evaluate RL agents for Inventory Management'
+    )
+    parser.add_argument(
+        '--results-dir', type=str, default=None,
+        help='Custom results directory (default: results/)'
+    )
+    args = parser.parse_args()
+
+    res_dir = None
+    if args.results_dir:
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        res_dir = os.path.join(project_root, args.results_dir)
+
+    run_evaluation(results_dir_override=res_dir)

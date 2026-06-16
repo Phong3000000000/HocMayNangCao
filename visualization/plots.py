@@ -16,6 +16,7 @@ import os
 import sys
 import json
 import numpy as np
+import argparse
 import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend for saving
 import matplotlib.pyplot as plt
@@ -403,9 +404,16 @@ def generate_all_plots(results_dir=None):
             'results'
         )
 
-    output_dir = os.path.join(
-        os.path.dirname(results_dir), 'reports', 'figures'
-    )
+    # Determine output figures directory based on results directory leaf name
+    dir_name = os.path.basename(results_dir.rstrip('/\\'))
+    if dir_name == 'results_100k':
+        output_dir = os.path.join(
+            os.path.dirname(results_dir), 'reports', 'figures_100k'
+        )
+    else:
+        output_dir = os.path.join(
+            os.path.dirname(results_dir), 'reports', 'figures'
+        )
     os.makedirs(output_dir, exist_ok=True)
 
     print(f"\n{'='*60}")
@@ -441,12 +449,15 @@ def generate_all_plots(results_dir=None):
     from envs.custom_env import InventoryEnv
     env = InventoryEnv()
 
-    for agent_name in ['q_learning', 'double_q_learning']:
+    for agent_name in ['q_learning', 'sarsa', 'double_q_learning']:
         model_path = os.path.join(results_dir, agent_name, 'seed_0.npz')
         if os.path.exists(model_path):
             if agent_name == 'q_learning':
                 from agents.q_learning import QLearningAgent
                 agent = QLearningAgent(env.N_STATES, env.N_ACTIONS)
+            elif agent_name == 'sarsa':
+                from agents.sarsa import SARSAAgent
+                agent = SARSAAgent(env.N_STATES, env.N_ACTIONS)
             else:
                 from agents.double_q_learning import DoubleQLearningAgent
                 agent = DoubleQLearningAgent(env.N_STATES, env.N_ACTIONS)
@@ -461,4 +472,18 @@ def generate_all_plots(results_dir=None):
 
 
 if __name__ == '__main__':
-    generate_all_plots()
+    parser = argparse.ArgumentParser(
+        description='Generate plots for RL Inventory Management'
+    )
+    parser.add_argument(
+        '--results-dir', type=str, default=None,
+        help='Custom results directory (default: results/)'
+    )
+    args = parser.parse_args()
+
+    res_dir = None
+    if args.results_dir:
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        res_dir = os.path.join(project_root, args.results_dir)
+
+    generate_all_plots(results_dir=res_dir)

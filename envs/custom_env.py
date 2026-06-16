@@ -112,7 +112,7 @@ class InventoryEnv(BaseEnv):
     N_STATES = N_INVENTORY * N_REGIME * N_DOW * N_PENDING   # 2646
     N_ACTIONS = MAX_ORDER + 1                                # 6
 
-    def __init__(self, regime_transitions=True, weekend_surge=False):
+    def __init__(self, regime_transitions=True, weekend_surge=False, surge_days=None):
         """
         Initialize the Inventory Environment.
 
@@ -123,9 +123,17 @@ class InventoryEnv(BaseEnv):
             weekend_surge (bool): If True, demand regime is shifted up by 1
                 on weekends (Sat=5, Sun=6). This creates an unseen demand
                 pattern for generalization testing.
+            surge_days (list or tuple of int, optional): Custom days of the week 
+                (0=Mon, ..., 6=Sun) on which demand regime is shifted up by 1.
+                If provided, overrides weekend_surge.
         """
         self.regime_transitions = regime_transitions
         self.weekend_surge = weekend_surge
+
+        if surge_days is not None:
+            self.surge_days = tuple(surge_days)
+        else:
+            self.surge_days = (5, 6) if weekend_surge else ()
 
         # Current state variables
         self.inventory = 0
@@ -213,8 +221,8 @@ class InventoryEnv(BaseEnv):
         # ── Step 3: Generate today's demand ────────────────────
         effective_regime = self.demand_regime
 
-        # Weekend surge: shift demand regime up on Sat/Sun
-        if self.weekend_surge and self.day_of_week in (5, 6):
+        # Surge days: shift demand regime up on specified days
+        if self.day_of_week in self.surge_days:
             effective_regime = min(effective_regime + 1, 2)
 
         dist = DEMAND_DISTRIBUTIONS[effective_regime]

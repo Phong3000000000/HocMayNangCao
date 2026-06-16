@@ -387,5 +387,56 @@ class TestEpisodeSummary:
             f"Profit {s['total_profit']} != {expected}"
 
 
+class TestCustomSurgeDays:
+    """Test custom surge days logic."""
+
+    def test_default_surge_days_when_disabled(self):
+        """When weekend_surge=False and surge_days=None, surge_days should be empty."""
+        env = InventoryEnv(weekend_surge=False, surge_days=None)
+        assert env.surge_days == ()
+
+    def test_default_surge_days_when_enabled(self):
+        """When weekend_surge=True, surge_days should default to (5, 6)."""
+        env = InventoryEnv(weekend_surge=True, surge_days=None)
+        assert env.surge_days == (5, 6)
+
+    def test_custom_surge_days_assignment(self):
+        """When surge_days is provided, it should override weekend_surge."""
+        env = InventoryEnv(weekend_surge=True, surge_days=[1, 3])
+        assert env.surge_days == (1, 3)
+        
+        env2 = InventoryEnv(weekend_surge=False, surge_days=(2, 4))
+        assert env2.surge_days == (2, 4)
+
+    def test_surge_occurs_on_custom_days(self):
+        """Surge should shift demand regime up exactly on specified custom days."""
+        # Setup env with fixed demand transitions, surge on Tuesday (1) and Thursday (3)
+        env = InventoryEnv(regime_transitions=False, surge_days=[1, 3])
+        
+        # Test Monday (0) -> no surge
+        env.reset(seed=42)
+        env.day_of_week = 0
+        env.demand_regime = 1 # Medium
+        # Trigger step (action=0)
+        env.step(0)
+        # Check that the history shows effective_regime = demand_regime = 1
+        assert env.episode_history[-1]['effective_regime'] == 1
+
+        # Test Tuesday (1) -> surge (regime shift: 1 -> 2)
+        env.reset(seed=42)
+        env.day_of_week = 1
+        env.demand_regime = 1 # Medium
+        env.step(0)
+        # Should be shifted to High (2)
+        assert env.episode_history[-1]['effective_regime'] == 2
+
+        # Test Tuesday (1) when demand_regime is already High (2) -> caps at 2
+        env.reset(seed=42)
+        env.day_of_week = 1
+        env.demand_regime = 2 # High
+        env.step(0)
+        assert env.episode_history[-1]['effective_regime'] == 2
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

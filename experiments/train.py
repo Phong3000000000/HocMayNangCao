@@ -19,6 +19,7 @@ import sys
 import yaml
 import numpy as np
 import json
+import argparse
 
 # Add project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -206,27 +207,34 @@ def create_agent(agent_name, agent_cfg, n_states, n_actions, seed):
         raise ValueError(f"Unknown agent: {agent_name}")
 
 
-def run_training(config=None):
+def run_training(config=None, output_dir=None, n_episodes_override=None):
     """
     Run the full training pipeline for all RL agents.
 
     For each agent type, trains over multiple seeds and saves:
         - Q-tables (results/<agent>/seed_<i>.npz)
         - Training history (results/<agent>_history.json)
+
+    Args:
+        config: Configuration dict. If None, loads from configs.yaml.
+        output_dir (str, optional): Custom output directory for results.
+            Defaults to 'results/' in project root.
+        n_episodes_override (int, optional): Override n_episodes from config.
     """
     if config is None:
         config = load_config()
 
     training_cfg = config['training']
-    n_episodes = training_cfg['n_episodes']
+    n_episodes = n_episodes_override or training_cfg['n_episodes']
     n_seeds = training_cfg['n_seeds']
     eval_interval = training_cfg['eval_interval']
     eval_episodes = training_cfg.get('eval_episodes', 30)
 
     # Output directory for saved models and histories
-    output_dir = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), 'results'
-    )
+    if output_dir is None:
+        output_dir = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'results'
+        )
     os.makedirs(output_dir, exist_ok=True)
 
     # Get state/action space sizes from environment
@@ -238,6 +246,7 @@ def run_training(config=None):
     print(f"Training: {n_episodes} episodes x {n_seeds} seeds")
     print(f"Evaluation every {eval_interval} episodes "
           f"({eval_episodes} eval episodes)")
+    print(f"Output directory: {output_dir}")
 
     # ═══════════════════════════════════════════════════════════
     # Train each agent type
@@ -313,4 +322,24 @@ def run_training(config=None):
 
 
 if __name__ == '__main__':
-    run_training()
+    parser = argparse.ArgumentParser(
+        description='Train RL agents for Inventory Management'
+    )
+    parser.add_argument(
+        '--output-dir', type=str, default=None,
+        help='Custom output directory for results (default: results/)'
+    )
+    parser.add_argument(
+        '--episodes', type=int, default=None,
+        help='Override number of training episodes (default: from configs.yaml)'
+    )
+    args = parser.parse_args()
+
+    # Resolve output_dir to absolute path relative to project root
+    out_dir = None
+    if args.output_dir:
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        out_dir = os.path.join(project_root, args.output_dir)
+
+    run_training(output_dir=out_dir, n_episodes_override=args.episodes)
+

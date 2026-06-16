@@ -122,9 +122,10 @@ st.markdown("""
 # ═══════════════════════════════════════════════════════════════
 
 @st.cache_resource
-def load_trained_agent(agent_type, seed=0):
+def load_trained_agent(agent_type, seed=0, results_dir=None):
     """Load a trained agent from saved Q-table."""
-    results_dir = os.path.join(PROJECT_ROOT, 'results')
+    if results_dir is None:
+        results_dir = os.path.join(PROJECT_ROOT, 'results')
     env = InventoryEnv()
     n_states = env.N_STATES
     n_actions = env.N_ACTIONS
@@ -148,7 +149,7 @@ def load_trained_agent(agent_type, seed=0):
     return agent, False
 
 
-def get_agent(agent_type, env):
+def get_agent(agent_type, env, results_dir=None):
     """Create or load an agent based on type."""
     if agent_type == 'Random':
         return RandomAgent(env.N_ACTIONS, seed=42), True
@@ -157,13 +158,13 @@ def get_agent(agent_type, env):
     elif agent_type == 'Reorder Threshold':
         return ReorderThresholdAgent(threshold=5, order_amount=5, env=env), True
     elif agent_type == 'Q-Learning':
-        agent, loaded = load_trained_agent('q_learning')
+        agent, loaded = load_trained_agent('q_learning', results_dir=results_dir)
         return agent, loaded
     elif agent_type == 'SARSA':
-        agent, loaded = load_trained_agent('sarsa')
+        agent, loaded = load_trained_agent('sarsa', results_dir=results_dir)
         return agent, loaded
     elif agent_type == 'Double Q-Learning':
-        agent, loaded = load_trained_agent('double_q_learning')
+        agent, loaded = load_trained_agent('double_q_learning', results_dir=results_dir)
         return agent, loaded
     return None, False
 
@@ -260,15 +261,54 @@ def main():
             index=3  # Default to Q-Learning
         )
 
-        demand_regime = st.selectbox(
-            "Demand Regime",
-            ['Low', 'Medium', 'High'],
-            index=1
+        # Training Budget selector
+        results_100k_dir = os.path.join(PROJECT_ROOT, 'results_100k')
+        budget_options = ['20,000 episodes']
+        if os.path.isdir(results_100k_dir):
+            budget_options.append('100,000 episodes')
+
+        training_budget = st.selectbox(
+            "Training Budget",
+            budget_options,
+            index=0,
+            help="Select which trained model to use (20K or 100K episodes)"
         )
-        regime_id = {'Low': 0, 'Medium': 1, 'High': 2}[demand_regime]
+
+        # Determine results directory based on selection
+        if training_budget == '100,000 episodes':
+            selected_results_dir = results_100k_dir
+        else:
+            selected_results_dir = os.path.join(PROJECT_ROOT, 'results')
 
         weekend_surge = st.checkbox("Weekend Surge (unseen pattern)")
+        surge_days = None
+        if weekend_surge:
+            selected_days = st.multiselect(
+                "Select Surge Days",
+                options=list(range(7)),
+                default=[5, 6],
+                format_func=lambda x: DAY_NAMES[x],
+                help="Select days of the week when demand surge occurs"
+            )
+            surge_days = selected_days
+
         episode_seed = st.number_input("Episode Seed", 0, 999, 42)
+
+        # Khởi tạo môi trường tạm thời để lấy xu hướng nhu cầu ban đầu dựa trên seed
+        temp_env = InventoryEnv(
+            regime_transitions=True,
+            weekend_surge=weekend_surge,
+            surge_days=surge_days
+        )
+        _, temp_info = temp_env.reset(seed=episode_seed)
+        initial_regime_name = temp_info['demand_regime_name'].title()
+
+        st.text_input(
+            "Initial Demand Regime (from Seed)",
+            value=initial_regime_name,
+            disabled=True,
+            help="The demand regime for Day 1, determined deterministically by the Episode Seed."
+        )
 
         st.divider()
         st.markdown("### About")
@@ -283,9 +323,11 @@ def main():
     # ─── Load Agent ────────────────────────────────────────────
     env = InventoryEnv(
         regime_transitions=True,
-        weekend_surge=weekend_surge
+        weekend_surge=weekend_surge,
+        surge_days=surge_days
     )
-    agent, is_loaded = get_agent(agent_type, env)
+    agent, is_loaded = get_agent(agent_type, env,
+                                  results_dir=selected_results_dir)
 
     if agent is None:
         st.error("❌ Could not create agent.")
@@ -299,10 +341,10 @@ def main():
         )
 
     # ─── Run Episode ───────────────────────────────────────────
-    # Override regime in env
     env_sim = InventoryEnv(
         regime_transitions=True,
-        weekend_surge=weekend_surge
+        weekend_surge=weekend_surge,
+        surge_days=surge_days
     )
     steps, summary = run_episode(agent, env_sim, seed=episode_seed)
 
@@ -352,6 +394,12 @@ def main():
         ax_inv.set_xlabel('Day')
         ax_inv.set_ylabel('Inventory')
         ax_inv.set_title('Inventory Level Over Time')
+        
+        # Detail X and Y axes
+        ax_inv.set_xticks(range(1, 31))
+        ax_inv.set_yticks(range(0, max(inventories) + 2))
+        ax_inv.tick_params(axis='both', labelsize=9)
+        
         ax_inv.legend()
         ax_inv.grid(True, alpha=0.3)
         st.pyplot(fig_inv)
@@ -368,7 +416,12 @@ def main():
             ax_act.set_xlabel('Day')
             ax_act.set_ylabel('Order Amount')
             ax_act.set_title('Daily Orders')
+            
+            # Detail X and Y axes
+            ax_act.set_xticks(range(1, 31))
             ax_act.set_yticks(range(6))
+            ax_act.tick_params(axis='both', labelsize=9)
+            
             ax_act.grid(True, alpha=0.3)
             st.pyplot(fig_act)
             plt.close(fig_act)
@@ -384,6 +437,12 @@ def main():
             ax_dem.set_xlabel('Day')
             ax_dem.set_ylabel('Units')
             ax_dem.set_title('Demand & Stockouts')
+            
+            # Detail X and Y axes
+            ax_dem.set_xticks(range(1, 31))
+            ax_dem.set_yticks(range(0, max(demands) + 2))
+            ax_dem.tick_params(axis='both', labelsize=9)
+            
             ax_dem.legend()
             ax_dem.grid(True, alpha=0.3)
             st.pyplot(fig_dem)
@@ -404,6 +463,14 @@ def main():
             ax_rd.set_xlabel('Day')
             ax_rd.set_ylabel('Reward')
             ax_rd.set_title('Daily Reward (Instant)')
+            
+            # Detail X and Y axes
+            ax_rd.set_xticks(range(1, 31))
+            min_r = int(np.floor(min(rewards_daily) / 10) * 10)
+            max_r = int(np.ceil(max(rewards_daily) / 10) * 10)
+            ax_rd.set_yticks(range(min_r, max_r + 1, 10))
+            ax_rd.tick_params(axis='both', labelsize=9)
+            
             ax_rd.grid(True, alpha=0.3)
             st.pyplot(fig_rd)
             plt.close(fig_rd)
@@ -419,6 +486,14 @@ def main():
             ax_rew.set_xlabel('Day')
             ax_rew.set_ylabel('Cumulative Reward')
             ax_rew.set_title('Cumulative Reward')
+            
+            # Detail X and Y axes
+            ax_rew.set_xticks(range(1, 31))
+            min_cr = int(np.floor(min(cum_rewards) / 25) * 25)
+            max_cr = int(np.ceil(max(cum_rewards) / 25) * 25)
+            ax_rew.set_yticks(range(min_cr, max_cr + 1, 25))
+            ax_rew.tick_params(axis='both', labelsize=9)
+            
             ax_rew.grid(True, alpha=0.3)
             st.pyplot(fig_rew)
             plt.close(fig_rew)
@@ -512,8 +587,9 @@ def main():
     # ═══════════════════════════════════════════════════════════
     with tab3:
         st.subheader("Learning Curves")
+        st.caption(f"Showing results for: **{training_budget}**")
 
-        results_dir = os.path.join(PROJECT_ROOT, 'results')
+        results_dir = selected_results_dir
         agent_names = ['q_learning', 'sarsa', 'double_q_learning']
         colors = {
             'q_learning': '#3B82F6',
@@ -553,8 +629,8 @@ def main():
             min_len = min(len(r) for r in all_rewards)
             all_rewards = np.array([r[:min_len] for r in all_rewards])
 
-            # Smoothing
-            window = 50
+            # Smoothing (Adjusted window size for downsampled data)
+            window = 20 if training_budget == '100,000 episodes' else 10
             if min_len > window:
                 smoothed = np.array([
                     np.convolve(r, np.ones(window)/window, mode='valid')
@@ -562,7 +638,11 @@ def main():
                 ])
                 mean_c = np.mean(smoothed, axis=0)
                 std_c = np.std(smoothed, axis=0)
-                x = np.arange(len(mean_c)) + window // 2
+                
+                # Scale X-axis to display correct episode numbers (factor of 50)
+                budget_eps = 100000 if training_budget == '100,000 episodes' else 20000
+                scale_factor = budget_eps / len(all_rewards[0])
+                x = (np.arange(len(mean_c)) + window // 2) * scale_factor
 
                 color = colors.get(aname, '#999')
                 label = display_names.get(aname, aname)
@@ -598,8 +678,12 @@ def main():
                 first_seed = list(histories.keys())[0]
                 epsilons = histories[first_seed].get('epsilons', [])
                 if epsilons:
+                    budget_eps = 100000 if training_budget == '100,000 episodes' else 20000
+                    scale_factor = budget_eps / len(epsilons)
+                    eps_x = np.arange(len(epsilons)) * scale_factor
+
                     fig_eps, ax_eps = plt.subplots(figsize=(10, 3))
-                    ax_eps.plot(epsilons, color='#FF6B6B', linewidth=1.5)
+                    ax_eps.plot(eps_x, epsilons, color='#FF6B6B', linewidth=1.5)
                     ax_eps.axhline(y=0.05, color='gray', linestyle='--',
                                    alpha=0.5, label='ε_min')
                     ax_eps.set_xlabel('Episode')
@@ -617,8 +701,10 @@ def main():
     # ═══════════════════════════════════════════════════════════
     with tab4:
         st.subheader("Agent Comparison")
+        st.caption(f"Showing results for: **{training_budget}**")
 
-        eval_path = os.path.join(results_dir, 'evaluation_results.json')
+        eval_path = os.path.join(selected_results_dir,
+                                 'evaluation_results.json')
 
         if os.path.exists(eval_path):
             with open(eval_path, 'r') as f:
