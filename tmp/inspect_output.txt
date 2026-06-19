@@ -1,0 +1,38 @@
+﻿Line 61 length: 99
+Line 61 repr: "$$Q(s, a) \\leftarrow Q(s, a) + \\alpha \\Big[ r + \\gamma \\cdot \\max_{a'} Q(s', a') - Q(s, a) \\Big]$$\n"
+
+  Backslash at pos 10: ...') \\leftarrow Q(s,'...
+  Backslash at pos 31: ...'+ \\alpha \\Big[ r '...
+  Backslash at pos 38: ...'a \\Big[ r + \\gamm'...
+  Backslash at pos 48: ...'+ \\gamma \\cdot \\m'...
+  Backslash at pos 55: ..."a \\cdot \\max_{a'}"...
+  Backslash at pos 61: ..."t \\max_{a'} Q(s',"...
+  Backslash at pos 91: ...') \\Big]$$\n'...
+
+=== Checking all lines with $$ ===
+Line 61: 7 backslashes, 0 double-backslashes
+  Content: $$Q(s, a) \leftarrow Q(s, a) + \alpha \Big[ r + \gamma \cdot \max_{a'} Q(s', a') - Q(s, a) \Big]$$
+Line 109: 6 backslashes, 0 double-backslashes
+  Content: $$Q(s, a) \leftarrow Q(s, a) + \alpha \Big[ r + \gamma \cdot Q(s', a') - Q(s, a) \Big]$$
+Line 161: 2 backslashes, 0 double-backslashes
+  Content: $$a^* = \arg\max_{a} Q_1(s', a)$$
+Line 163: 6 backslashes, 0 double-backslashes
+  Content: $$Q_1(s, a) \leftarrow Q_1(s, a) + \alpha \Big[ r + \gamma \cdot Q_2(s', a^*) - Q_1(s, a) \Big]$$
+Line 168: 2 backslashes, 0 double-backslashes
+  Content: $$a^* = \arg\max_{a} Q_2(s', a)$$
+Line 170: 6 backslashes, 0 double-backslashes
+  Content: $$Q_2(s, a) \leftarrow Q_2(s, a) + \alpha \Big[ r + \gamma \cdot Q_1(s', a^*) - Q_2(s, a) \Big]$$
+Line 250: 4 backslashes, 0 double-backslashes
+  Content: $$= r + \gamma \cdot \max_{a'} Q(s', a') = 27 + 0.99 \times 25 = 51.75$$
+Line 252: 2 backslashes, 0 double-backslashes
+  Content: $$Q(s, a{=}4) \leftarrow Q(s, 4) + 0.15 \times [51.75 - Q(s, 4)]$$
+Line 261: 3 backslashes, 0 double-backslashes
+  Content: $$= r + \gamma \cdot Q(s', a'{=}0) = 27 + 0.99 \times 10 = 36.90$$
+Line 263: 2 backslashes, 0 double-backslashes
+  Content: $$Q(s, a{=}4) \leftarrow Q(s, 4) + 0.15 \times [36.90 - Q(s, 4)]$$
+Line 272: 2 backslashes, 0 double-backslashes
+  Content: $$a^* = \arg\max_{a} Q_1(s', a) = 3$$
+Line 274: 3 backslashes, 0 double-backslashes
+  Content: $$= r + \gamma \cdot Q_2(s', a^*{=}3) = 27 + 0.99 \times 22 = 48.78$$
+Line 276: 2 backslashes, 0 double-backslashes
+  Content: $$Q_1(s, a{=}4) \leftarrow Q_1(s, 4) + 0.15 \times [48.78 - Q_1(s, 4)]$$

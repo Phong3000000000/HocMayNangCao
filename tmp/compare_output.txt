@@ -1,0 +1,21 @@
+=== OLD FILE (QLearning_Algorithm.md - WORKING) ===
+Line 18: "$$Q(s, a) \\leftarrow Q(s, a) + \\alpha \\left[ r + \\gamma \\max_{a'} Q(s', a') - Q(s, a) \\right]$$"
+
+=== NEW FILE (HuongDan_ThuatToan_RL_SoSanh.md - BROKEN) ===
+Line 61: "$$Q(s, a) \\leftarrow Q(s, a) + \\alpha \\Big[ r + \\gamma \\cdot \\max_{a'} Q(s', a') - Q(s, a) \\Big]$$"
+Line 109: "$$Q(s, a) \\leftarrow Q(s, a) + \\alpha \\Big[ r + \\gamma \\cdot Q(s', a') - Q(s, a) \\Big]$$"
+Line 161: "$$a^* = \\arg\\max_{a} Q_1(s', a)$$"
+Line 163: "$$Q_1(s, a) \\leftarrow Q_1(s, a) + \\alpha \\Big[ r + \\gamma \\cdot Q_2(s', a^*) - Q_1(s, a) \\Big]$$"
+Line 168: "$$a^* = \\arg\\max_{a} Q_2(s', a)$$"
+Line 170: "$$Q_2(s, a) \\leftarrow Q_2(s, a) + \\alpha \\Big[ r + \\gamma \\cdot Q_1(s', a^*) - Q_2(s, a) \\Big]$$"
+Line 250: "$$= r + \\gamma \\cdot \\max_{a'} Q(s', a') = 27 + 0.99 \\times 25 = 51.75$$"
+Line 252: '$$Q(s, a{=}4) \\leftarrow Q(s, 4) + 0.15 \\times [51.75 - Q(s, 4)]$$'
+Line 261: "$$= r + \\gamma \\cdot Q(s', a'{=}0) = 27 + 0.99 \\times 10 = 36.90$$"
+Line 263: '$$Q(s, a{=}4) \\leftarrow Q(s, 4) + 0.15 \\times [36.90 - Q(s, 4)]$$'
+Line 272: "$$a^* = \\arg\\max_{a} Q_1(s', a) = 3$$"
+Line 274: "$$= r + \\gamma \\cdot Q_2(s', a^*{=}3) = 27 + 0.99 \\times 22 = 48.78$$"
+Line 276: '$$Q_1(s, a{=}4) \\leftarrow Q_1(s, 4) + 0.15 \\times [48.78 - Q_1(s, 4)]$$'
+
+=== First 3 bytes of new file ===
+Hex: 2D 2D 2D 0D 0A 74 79 70 65 3A
+Has BOM: False

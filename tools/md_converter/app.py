@@ -22,6 +22,20 @@ HTML_TEMPLATE = r"""
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD Converter — Markdown → PDF / Word</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1206,6 +1220,7 @@ HTML_TEMPLATE = r"""
 
     <script>
         let currentMdContent = '';
+        let currentRawHtml = '';
         let currentFileName = 'document';
         let selectedFiles = [];
         let nextFileId = 1;
@@ -1682,6 +1697,7 @@ HTML_TEMPLATE = r"""
                         <span class="preview-empty-icon">🔍</span>
                         <p>Upload file hoặc nhập Markdown để xem trước</p>
                     </div>`;
+                currentRawHtml = '';
                 return;
             }
 
@@ -1692,14 +1708,26 @@ HTML_TEMPLATE = r"""
             })
             .then(res => res.json())
             .then(data => {
+                currentRawHtml = data.html;
                 document.getElementById('previewArea').innerHTML = data.html;
+                
                 // If fullscreen modal is open, trigger pagination update
                 const modal = document.getElementById('fullscreenModal');
                 if (modal.classList.contains('show')) {
                     paginatePreview(data.html);
                 }
+                
+                // Trigger MathJax typeset
+                if (window.MathJax) {
+                    MathJax.typesetPromise([document.getElementById('previewArea')]).then(() => {
+                        if (modal.classList.contains('show')) {
+                            MathJax.typesetPromise([document.getElementById('a4PageContainer')]);
+                        }
+                    }).catch(err => console.log('MathJax typesetting error:', err));
+                }
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error(err);
                 document.getElementById('previewArea').innerHTML = '<p style="color:var(--error)">Lỗi preview</p>';
             });
         }
@@ -1837,8 +1865,6 @@ HTML_TEMPLATE = r"""
                 return;
             }
             
-            const previewContent = document.getElementById('previewArea').innerHTML;
-            
             const modal = document.getElementById('fullscreenModal');
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
@@ -1848,7 +1874,10 @@ HTML_TEMPLATE = r"""
 
             // Run pagination after rendering layout
             setTimeout(() => {
-                paginatePreview(previewContent);
+                paginatePreview(currentRawHtml || document.getElementById('previewArea').innerHTML);
+                if (window.MathJax) {
+                    MathJax.typesetPromise([document.getElementById('a4PageContainer')]).catch(err => console.log(err));
+                }
             }, 100);
         }
 

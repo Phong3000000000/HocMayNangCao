@@ -44,6 +44,7 @@ r = revenue - purchase_cost - holding_cost - stockout_penalty
 
 - [[Notes/DanhGia_DuAn|📊 Đánh giá dự án theo tiêu chí của Thầy]] — Checklist chi tiết, điểm hiện tại (~76/100), kế hoạch cải thiện.
 - [[Notes/PhanTich_HieuNang_RL_100K_200K|📊 Phân tích hiệu năng huấn luyện (100K vs 200K Episodes)]] — Giải thích lý do RL chưa vượt qua Heuristic và đề xuất hướng cải thiện tối ưu thay vì tăng lên 200K episodes.
+- [[Notes/HuongDan_ThuatToan_RL_SoSanh|📘 Hướng dẫn Chi tiết Thuật toán RL: Q-Learning, Double Q-Learning & SARSA]] — Giới thiệu, ví dụ cụ thể, so sánh 6 agent, phân tích Weekend Surge, bảng ưu nhược điểm toàn diện.
 
 ## Tags
 - `#note/idea` — Ý tưởng mới

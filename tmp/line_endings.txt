@@ -1,0 +1,16 @@
+=== OLD (working) ===
+File: QLearning_Algorithm.md
+Size: 2828 bytes
+CRLF (\r\n): 0
+LF only (\n): 58
+CR only (\r): 0
+Line ending type: LF
+
+=== NEW (broken?) ===
+File: HuongDan_ThuatToan_RL_SoSanh.md
+Size: 33385 bytes
+CRLF (\r\n): 566
+LF only (\n): 0
+CR only (\r): 0
+Line ending type: CRLF
+

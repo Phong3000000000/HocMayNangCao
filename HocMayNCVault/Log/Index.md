@@ -19,6 +19,8 @@ created: 2026-05-27
 
 ## Recent Logs
 
+- [[Log/2026-06-19|2026-06-19 — Đánh giá và góp ý slide thuyết trình]]
+- [[Log/2026-06-18|2026-06-18 — Tạo tài liệu hướng dẫn thuật toán RL chi tiết]]
 - [[Log/2026-06-16|2026-06-16 — Phân tích chiến lược huấn luyện RL 100K vs 200K episodes]]
 - [[Log/2026-06-14|2026-06-14 — Tạo nội dung chi tiết Slide thuyết trình]]
 - [[Log/2026-06-13|2026-06-13 — Đồng bộ nhánh chính & Cập nhật code lên Streamlit Cloud]]
