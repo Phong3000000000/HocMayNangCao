@@ -349,11 +349,13 @@ def main():
     steps, summary = run_episode(agent, env_sim, seed=episode_seed)
 
     # ─── Tabs ──────────────────────────────────────────────────
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "Episode Simulation",
         "Policy & Heatmap",
         "Learning Curves",
-        "Agent Comparison"
+        "Agent Comparison",
+        "Weekend Surge Test",
+        "Budget Comparison (20K vs 100K)"
     ])
 
     # ═══════════════════════════════════════════════════════════
@@ -771,6 +773,7 @@ def main():
                 plt.tight_layout()
                 st.pyplot(fig_comp)
                 plt.close(fig_comp)
+
         else:
             st.info(
                 "No evaluation results found. Run:\n\n"
@@ -780,6 +783,284 @@ def main():
                 "```"
             )
 
+    # ═══════════════════════════════════════════════════════════
+    # TAB 5: Weekend Surge Test (Dynamic Evaluation)
+    # ═══════════════════════════════════════════════════════════
+    with tab5:
+        st.subheader("Weekend Surge Stress Test (Dynamic)")
+        st.markdown(
+            "Run real-time evaluation of all agents under a custom demand surge pattern. "
+            "Select the surge days in the sidebar and configure test parameters below."
+        )
+
+        col_cfg1, col_cfg2 = st.columns(2)
+        with col_cfg1:
+            eval_episodes = st.slider("Number of Test Episodes", 10, 100, 30, help="Fewer episodes will evaluate faster.")
+        with col_cfg2:
+            eval_seeds = st.slider("Number of Seeds", 1, 10, 3, help="Fewer seeds will evaluate faster.")
+
+        # Show warning if weekend_surge checkbox is off
+        if not weekend_surge:
+            st.warning("Please check 'Weekend Surge (unseen pattern)' in the sidebar to enable surge simulation.")
+        elif surge_days is None or len(surge_days) == 0:
+            st.warning("Please select at least one surge day in the sidebar to run the stress test.")
+            
+        run_btn = st.button("Run Live Stress Test", disabled=not weekend_surge or not surge_days)
+
+        if run_btn:
+            agents_list = ['Q-Learning', 'SARSA', 'Double Q-Learning']
+            results_placeholder = st.empty()
+            progress_bar = st.progress(0)
+            
+            # Define evaluation environments
+            env_normal = InventoryEnv(regime_transitions=True, weekend_surge=False)
+            env_surge = InventoryEnv(regime_transitions=True, weekend_surge=True, surge_days=surge_days)
+            
+            surge_results = []
+            
+            # Helper fast evaluation function
+            def eval_fast(agent_obj, env_obj, n_eps, n_sds):
+                profits = []
+                agent_obj.set_eval_mode()
+                for sd in range(n_sds):
+                    for ep in range(n_eps):
+                        state, _ = env_obj.reset(seed=sd * 1000 + ep + 15000)
+                        done = False
+                        while not done:
+                            action = agent_obj.select_action(state)
+                            next_state, reward, terminated, truncated, info = env_obj.step(action)
+                            done = terminated or truncated
+                            state = next_state
+                        profits.append(env_obj.get_episode_summary()['total_profit'])
+                agent_obj.set_train_mode()
+                return float(np.mean(profits))
+
+            # Run loop
+            total_steps = len(agents_list)
+            for idx, name in enumerate(agents_list):
+                results_placeholder.text(f"Evaluating agent: {name}...")
+                
+                # Load agent
+                agent_obj, loaded = get_agent(name, env_normal, results_dir=selected_results_dir)
+                
+                # Normal evaluate
+                normal_mean = eval_fast(agent_obj, env_normal, eval_episodes, eval_seeds)
+                # Surge evaluate
+                surge_mean = eval_fast(agent_obj, env_surge, eval_episodes, eval_seeds)
+                
+                diff_pct = ((surge_mean - normal_mean) / normal_mean * 100) if normal_mean > 0 else 0
+                diff_sign = "+" if diff_pct >= 0 else ""
+                
+                surge_results.append({
+                    'Agent': name,
+                    'Normal Profit': normal_mean,
+                    'Surge Profit': surge_mean,
+                    'Profit Change (%)': f"{diff_sign}{diff_pct:.1f}%",
+                    'diff_pct_val': diff_pct
+                })
+                
+                progress_bar.progress((idx + 1) / total_steps)
+            
+            results_placeholder.empty()
+            progress_bar.empty()
+            
+            # Render results
+            st.success("Evaluation completed successfully!")
+            
+            import pandas as pd
+            df_dyn = pd.DataFrame(surge_results)
+            
+            # Format columns for display
+            df_disp = df_dyn.copy()
+            df_disp['Normal Profit'] = df_disp['Normal Profit'].map(lambda x: f"{x:.1f}")
+            df_disp['Surge Profit'] = df_disp['Surge Profit'].map(lambda x: f"{x:.1f}")
+            
+            st.dataframe(df_disp.drop(columns=['diff_pct_val']), use_container_width=True)
+            
+            # Create a bar chart comparing Normal Profit vs Surge Profit
+            fig_dyn, ax_dyn = plt.subplots(figsize=(10, 5))
+            
+            x_indices = np.arange(len(surge_results))
+            bar_width = 0.35
+
+            normal_profits_vals = [row['Normal Profit'] for row in surge_results]
+            surge_profits_vals = [row['Surge Profit'] for row in surge_results]
+            agent_labels_list = [row['Agent'] for row in surge_results]
+
+            rects1 = ax_dyn.bar(x_indices - bar_width/2, normal_profits_vals, bar_width, 
+                                  label='Normal Demand', color='#3B82F6', alpha=0.8)
+            rects2 = ax_dyn.bar(x_indices + bar_width/2, surge_profits_vals, bar_width, 
+                                  label='Weekend Surge (Custom)', color='#FFA94D', alpha=0.9)
+
+            ax_dyn.set_ylabel('Profit ($)')
+            ax_dyn.set_title(f"Profit Comparison (Live Test: Surge on {[DAY_NAMES[d] for d in surge_days]})")
+            ax_dyn.set_xticks(x_indices)
+            ax_dyn.set_xticklabels(agent_labels_list)
+            ax_dyn.legend()
+            ax_dyn.grid(axis='y', alpha=0.3)
+
+            # Add change percentage text labels
+            for idx, rect in enumerate(rects2):
+                height = rect.get_height()
+                chg_text = surge_results[idx]['Profit Change (%)']
+                ax_dyn.annotate(chg_text,
+                                  xy=(rect.get_x() + rect.get_width() / 2, height),
+                                  xytext=(0, 3),
+                                  textcoords="offset points",
+                                  ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+            plt.tight_layout()
+            st.pyplot(fig_dyn)
+            plt.close(fig_dyn)
+
+    # ═══════════════════════════════════════════════════════════
+    # TAB 6: Budget Comparison (20K vs 100K Episodes)
+    # ═══════════════════════════════════════════════════════════
+    with tab6:
+        st.subheader("Training Budget Comparison: 20,000 vs 100,000 Episodes")
+        st.markdown(
+            "Comparing the performance of RL agents trained with different training budgets. "
+            "This highlights how algorithms benefit from more training data."
+        )
+
+        eval_20k_path = os.path.join(PROJECT_ROOT, 'results', 'evaluation_results.json')
+        eval_100k_path = os.path.join(PROJECT_ROOT, 'results_100k', 'evaluation_results.json')
+
+        if os.path.exists(eval_20k_path) and os.path.exists(eval_100k_path):
+            with open(eval_20k_path, 'r') as f:
+                eval_20k = json.load(f)
+            with open(eval_100k_path, 'r') as f:
+                eval_100k = json.load(f)
+
+            all_keys = ['random', 'always_order_2', 'reorder_threshold', 'q_learning', 'sarsa', 'double_q_learning']
+            display_names_local = {
+                'random': 'Random',
+                'always_order_2': 'Always Order 2',
+                'reorder_threshold': 'Reorder Threshold',
+                'q_learning': 'Q-Learning',
+                'sarsa': 'SARSA',
+                'double_q_learning': 'Double Q-Learning'
+            }
+
+            budget_data = []
+            for k in all_keys:
+                if k in eval_20k and k in eval_100k:
+                    # Profit
+                    p_20k = eval_20k[k].get('profits_mean', 0)
+                    p_100k = eval_100k[k].get('profits_mean', 0)
+                    p_diff = ((p_100k - p_20k) / p_20k * 100) if p_20k > 0 else 0
+                    
+                    # Stockout Rate
+                    st_20k = eval_20k[k].get('stockout_rates_mean', 0)
+                    st_100k = eval_100k[k].get('stockout_rates_mean', 0)
+                    st_diff = ((st_100k - st_20k) / st_20k * 100) if st_20k > 0 else 0
+                    
+                    # Avg Inventory
+                    inv_20k = eval_20k[k].get('avg_inventories_mean', 0)
+                    inv_100k = eval_100k[k].get('avg_inventories_mean', 0)
+                    inv_diff = ((inv_100k - inv_20k) / inv_20k * 100) if inv_20k > 0 else 0
+                    
+                    # Stockout Penalty
+                    pen_20k = eval_20k[k].get('total_stockout_penalties_mean', 0)
+                    pen_100k = eval_100k[k].get('total_stockout_penalties_mean', 0)
+                    pen_diff = ((pen_100k - pen_20k) / pen_20k * 100) if pen_20k > 0 else 0
+
+                    budget_data.append({
+                        'Agent': display_names_local[k],
+                        'Profit (20K)': p_20k,
+                        'Profit (100K)': p_100k,
+                        'Profit Change': p_diff,
+                        'Stockout (20K)': st_20k,
+                        'Stockout (100K)': st_100k,
+                        'Stockout Change': st_diff,
+                        'Avg Inv (20K)': inv_20k,
+                        'Avg Inv (100K)': inv_100k,
+                        'Inv Change': inv_diff,
+                        'Penalty (20K)': pen_20k,
+                        'Penalty (100K)': pen_100k,
+                        'Penalty Change': pen_diff
+                    })
+
+            import pandas as pd
+            df_budget = pd.DataFrame(budget_data)
+            
+            # Format display dataframe
+            df_budget_disp = pd.DataFrame()
+            df_budget_disp['Agent'] = df_budget['Agent']
+            df_budget_disp['Profit (20K)'] = df_budget['Profit (20K)'].map(lambda x: f"{x:.1f}")
+            df_budget_disp['Profit (100K)'] = df_budget['Profit (100K)'].map(lambda x: f"{x:.1f}")
+            df_budget_disp['Profit Change'] = df_budget['Profit Change'].map(lambda x: "0.0%" if abs(x) < 1e-5 else (f"+{x:.1f}%" if x > 0 else f"{x:.1f}%"))
+            
+            df_budget_disp['Stockout Rate (20K)'] = df_budget['Stockout (20K)'].map(lambda x: f"{x:.3f}")
+            df_budget_disp['Stockout Rate (100K)'] = df_budget['Stockout (100K)'].map(lambda x: f"{x:.3f}")
+            df_budget_disp['Stockout Change'] = df_budget['Stockout Change'].map(lambda x: "0.0%" if abs(x) < 1e-5 else (f"+{x:.1f}%" if x > 0 else f"{x:.1f}%"))
+            
+            df_budget_disp['Avg Inv (20K)'] = df_budget['Avg Inv (20K)'].map(lambda x: f"{x:.2f}")
+            df_budget_disp['Avg Inv (100K)'] = df_budget['Avg Inv (100K)'].map(lambda x: f"{x:.2f}")
+            
+            df_budget_disp['Penalty (20K)'] = df_budget['Penalty (20K)'].map(lambda x: f"{x:.1f}")
+            df_budget_disp['Penalty (100K)'] = df_budget['Penalty (100K)'].map(lambda x: f"{x:.1f}")
+            df_budget_disp['Penalty Change'] = df_budget['Penalty Change'].map(lambda x: "0.0%" if abs(x) < 1e-5 else (f"+{x:.1f}%" if x > 0 else f"{x:.1f}%"))
+
+            st.dataframe(df_budget_disp, use_container_width=True)
+
+            # Create 2x2 comparison charts
+            fig_bud, axes = plt.subplots(2, 2, figsize=(14, 10))
+            fig_bud.suptitle('Performance Comparison: 20K vs. 100K Episodes', fontsize=16, fontweight='bold')
+
+            # Biểu đồ configs
+            chart_configs = [
+                ('Profit ($)', 'Profit (20K)', 'Profit (100K)', 'Profit Change', axes[0][0], '#A5B4FC', '#4F46E5', 'higher'),
+                ('Stockout Rate', 'Stockout (20K)', 'Stockout (100K)', 'Stockout Change', axes[0][1], '#FCA5A5', '#DC2626', 'lower'),
+                ('Avg Inventory', 'Avg Inv (20K)', 'Avg Inv (100K)', 'Inv Change', axes[1][0], '#FDE047', '#CA8A04', 'lower'),
+                ('Stockout Penalty ($)', 'Penalty (20K)', 'Penalty (100K)', 'Penalty Change', axes[1][1], '#FDBA74', '#EA580C', 'lower')
+            ]
+
+            x_indices = np.arange(len(budget_data))
+            bar_width = 0.35
+            labels = df_budget['Agent'].tolist()
+
+            for title, key_20k, key_100k, key_chg, ax, color_20k, color_100k, direction in chart_configs:
+                vals_20k = df_budget[key_20k].tolist()
+                vals_100k = df_budget[key_100k].tolist()
+
+                rects1 = ax.bar(x_indices - bar_width/2, vals_20k, bar_width, 
+                                 label='20,000 Episodes', color=color_20k, alpha=0.8, edgecolor='white')
+                rects2 = ax.bar(x_indices + bar_width/2, vals_100k, bar_width, 
+                                 label='100,000 Episodes', color=color_100k, alpha=0.9, edgecolor='white')
+
+                ax.set_ylabel(title, fontsize=11)
+                ax.set_title(f'Comparison: {title}', fontsize=12, fontweight='bold')
+                ax.set_xticks(x_indices)
+                ax.set_xticklabels(labels, fontsize=9, rotation=15)
+                ax.legend(fontsize=9)
+                ax.grid(axis='y', alpha=0.3)
+
+                # Add percentage change text labels on top of 100K bars
+                for idx, rect in enumerate(rects2):
+                    height = rect.get_height()
+                    chg_val = df_budget.iloc[idx][key_chg]
+                    
+                    if abs(chg_val) < 1e-5:
+                        chg_text = "0.0%"
+                        text_color = '#475569'
+                    else:
+                        chg_text = f"+{chg_val:.1f}%" if chg_val > 0 else f"{chg_val:.1f}%"
+                        # Highlight colors based on improvement direction (green for good, red for bad)
+                        is_good = (chg_val > 0 and direction == 'higher') or (chg_val < 0 and direction == 'lower')
+                        text_color = '#059669' if is_good else '#DC2626'
+                    
+                    ax.annotate(chg_text,
+                               xy=(rect.get_x() + rect.get_width() / 2, height),
+                               xytext=(0, 3),
+                               textcoords="offset points",
+                               ha='center', va='bottom', fontsize=9, fontweight='bold', color=text_color)
+
+            plt.tight_layout()
+            st.pyplot(fig_bud)
+            plt.close(fig_bud)
+        else:
+            st.info("Ensure both standard results (results/) and 100k results (results_100k/) contain evaluation_results.json.")
 
 if __name__ == '__main__':
     main()
